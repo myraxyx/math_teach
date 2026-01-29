@@ -419,6 +419,103 @@
             font-weight: bold;
             font-size: 18px;
         }
+
+        /* Restart Popup Styles */
+        .restart-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .restart-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: popupScale 0.5s ease-out;
+        }
+
+        @keyframes popupScale {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .restart-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+
+        .btn-yes:hover, .btn-no:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .achievement-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid gold;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px gold; }
+            50% { box-shadow: 0 0 20px gold; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -435,6 +532,39 @@
     <!-- Student Question Indicator -->
     <div class="question-indicator" id="questionIndicator">
         ❓ <span id="questionStudent">Siswa</span> ingin bertanya! Klik pada siswa yang berkedip
+    </div>
+
+    <!-- Restart Popup -->
+    <div class="restart-popup" id="restartPopup">
+        <div class="restart-content">
+            <h2 id="restartTitle">🎮 Permainan Selesai!</h2>
+            
+            <div id="finalStats" style="margin: 20px 0;">
+                <!-- Final stats will be added here -->
+            </div>
+
+            <div class="stats-grid" id="statsGrid">
+                <!-- Stats grid will be added here -->
+            </div>
+
+            <div id="achievementBadge" class="achievement-badge" style="display: none;">
+                <!-- Achievement badge will be added here -->
+            </div>
+
+            <h3>Main Lagi?</h3>
+            <div class="restart-buttons">
+                <button class="btn-yes" onclick="confirmRestart()">
+                    ✅ Ya, Main Lagi!
+                </button>
+                <button class="btn-no" onclick="declineRestart()">
+                    ❌ Tidak, Terima Kasih
+                </button>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 14px; opacity: 0.8;">
+                Skor tertinggi: <span id="highScoreValue">0</span>
+            </p>
+        </div>
     </div>
 
     <!-- Main Game Container -->
@@ -460,7 +590,7 @@
 
             <!-- Center: Whiteboard -->
             <div class="whiteboard-container">
-                <div class="question-counter" id="questionCounter">Pertanyaan 1/5</div>
+                <div class="question-counter" id="questionCounter">Pertanyaan 1/10</div>
                 <div class="timer" id="timer">⏰ 30s</div>
                 <div class="exam-timer" id="examTimer" style="display: none;">⏳ Ujian: 2:00</div>
                 <div class="question-text" id="questionText">
@@ -483,7 +613,7 @@
                     <h3>📊 Progress</h3>
                     <div>Permutasi: <span id="permutasiProgress">0%</span></div>
                     <div>Kombinasi: <span id="kombinasiProgress">0%</span></div>
-                    <div>Pertanyaan terjawab: <span id="questionsAnswered">0/5</span></div>
+                    <div>Pertanyaan terjawab: <span id="questionsAnswered">0/10</span></div>
                 </div>
                 <div class="stats-box">
                     <h3>😊 Guru</h3>
@@ -498,7 +628,7 @@
             <button class="control-btn btn-start" id="startDayBtn" onclick="startDay()">
                 Mulai Hari
             </button>
-            <button class="control-btn btn-next" id="nextQuestionBtn" onclick="nextQuestion()" disabled>
+            <button class="control-btn btn-next" id="nextQuestionBtn" onclick="nextQuestion()" disabled style="display: none;">
                 Lanjut Pertanyaan
             </button>
             <button class="control-btn btn-ask" id="askBtn" onclick="answerStudentQuestion()" disabled>
@@ -548,7 +678,7 @@
             <h2>🎉 Hari Selesai!</h2>
             <div style="margin: 20px 0; padding: 20px; background: #e8f5e9; border-radius: 10px;">
                 <h3>📊 Hasil Hari Ini:</h3>
-                <p>Pertanyaan dijawab: <span id="dayQuestionsAnswered">0</span>/5</p>
+                <p>Pertanyaan dijawab: <span id="dayQuestionsAnswered">0</span>/<span id="dayTotalQuestions">10</span></p>
                 <p>Jawaban benar: <span id="dayCorrectAnswers">0</span></p>
                 <p>Pertanyaan siswa terjawab: <span id="dayStudentQuestions">0</span></p>
                 <p>Skor hari ini: <span id="dayScore">0</span></p>
@@ -660,7 +790,7 @@
                 <!-- Result message will be added here -->
             </div>
             <div style="text-align: center;">
-                <button class="control-btn" onclick="restartGame()">
+                <button class="control-btn" onclick="showRestartPopup()">
                     Main Lagi
                 </button>
             </div>
@@ -681,6 +811,7 @@
             timerActive: false,
             timeLeft: 30,
             timerInterval: null,
+            autoNextTimer: null,
             questionsAnswered: 0,
             correctAnswers: 0,
             patience: 100,
@@ -698,10 +829,18 @@
             riskLevel: 30,
             iceCreamBought: false,
             examResults: [],
-            examTimeLeft: 120, // 2 hours in minutes
+            examTimeLeft: 120,
             examTimerInterval: null,
-            remainingActions: 4 // 2 hours / 30 minutes per action = 4 actions
+            remainingActions: 4,
+            
+            // Game result state
+            finalResult: null,
+            finalPassRate: 0,
+            finalStats: null
         };
+
+        // High score system
+        let highScore = localStorage.getItem('mathTeacherHighScore') || 0;
 
         // ========================
         // GAME DATA
@@ -717,55 +856,8 @@
             studentScores[student] = 4.0 + Math.random() * 1.5;
         });
 
-        // Student questions data
+        // Student questions data (hari 2 dan 3 saja)
         const studentQuestions = {
-            day1: [
-                {
-                    student: "Wemmbu",
-                    question: "Pak, apa bedanya permutasi dan kombinasi dalam kehidupan sehari-hari?",
-                    options: [
-                        "Permutasi untuk susunan, kombinasi untuk pilihan",
-                        "Kombinasi untuk urutan, permutasi untuk kelompok",
-                        "Tidak ada bedanya",
-                        "Hanya berbeda dalam rumus saja"
-                    ],
-                    correct: 0,
-                    explanation: "Permutasi memperhatikan urutan (contoh: susunan password), kombinasi tidak (contoh: pilih anggota tim)."
-                },
-                {
-                    student: "Spoke",
-                    question: "Pak, kalau kita punya 4 buku berbeda dan mau susun 2 buku di rak, berapa caranya?",
-                    options: ["4 cara", "6 cara", "12 cara", "24 cara"],
-                    correct: 2,
-                    explanation: "Permutasi P(4,2) = 4!/(4-2)! = 4×3 = 12 cara"
-                },
-                {
-                    student: "Parrotx2",
-                    question: "Pak, kenapa 0! = 1? Saya tidak mengerti.",
-                    options: [
-                        "Karena definisi matematika",
-                        "Agar rumus konsisten",
-                        "Kebetulan saja",
-                        "Kesepakatan matematikawan"
-                    ],
-                    correct: 1,
-                    explanation: "0! = 1 agar rumus kombinasi dan permutasi tetap bekerja saat r = 0 atau r = n."
-                },
-                {
-                    student: "Gojo",
-                    question: "Pak, dalam kombinasi C(5,3) apakah sama dengan C(5,2)?",
-                    options: ["Sama", "Berbeda", "Tergantung", "Tidak tahu"],
-                    correct: 0,
-                    explanation: "C(n,r) = C(n,n-r). Jadi C(5,3) = C(5,2) = 10"
-                },
-                {
-                    student: "Geto",
-                    question: "Pak, kalau pilih 3 dari 7 siswa untuk jadi ketua, wakil, dan sekretaris, pakai permutasi atau kombinasi?",
-                    options: ["Permutasi", "Kombinasi", "Keduanya", "Tidak tahu"],
-                    correct: 0,
-                    explanation: "Karena ada jabatan berbeda (urutan penting), jadi pakai permutasi."
-                }
-            ],
             day2: [
                 {
                     student: "Flame",
@@ -933,35 +1025,67 @@
 
         const questionsData = {
             day1: [
+                // 5 SOAL PERMUTASI
                 {
-                    question: "Ada 5 buku berbeda, berapa cara menyusunnya?",
-                    options: ["5 cara", "25 cara", "120 cara", "625 cara"],
+                    question: "Berapa banyak cara menyusun 6 buku berbeda di rak?",
+                    options: ["36", "120", "720", "5040"],
                     correct: 2,
-                    explanation: "Permutasi 5 objek: 5! = 120 cara"
+                    explanation: "Permutasi 6 objek: 6! = 6×5×4×3×2×1 = 720 cara"
                 },
                 {
-                    question: "Dari 7 siswa, pilih 3 pengurus. Berapa cara?",
-                    options: ["21 cara", "35 cara", "210 cara", "5040 cara"],
+                    question: "Dalam lomba lari 8 peserta, berapa banyak kemungkinan juara 1, 2, dan 3?",
+                    options: ["56", "336", "672", "40320"],
                     correct: 1,
-                    explanation: "Kombinasi C(7,3) = 35 cara"
+                    explanation: "Permutasi P(8,3) = 8×7×6 = 336 cara"
                 },
                 {
-                    question: "Password 3 angka berbeda (0-9), berapa kemungkinan?",
-                    options: ["1000", "720", "120", "90"],
-                    correct: 1,
-                    explanation: "Permutasi 3 angka: 10×9×8 = 720"
+                    question: "Password 4 digit dengan angka berbeda (0-9), berapa kemungkinan?",
+                    options: ["10000", "5040", "3024", "720"],
+                    correct: 2,
+                    explanation: "Permutasi 4 angka: 10×9×8×7 = 5040"
                 },
                 {
-                    question: "Dari kata 'MATEMATIKA', berapa susunan berbeda?",
+                    question: "Dari kata 'MATEMATIKA', berapa susunan huruf berbeda?",
                     options: ["151.200", "100.800", "75.600", "50.400"],
                     correct: 0,
-                    explanation: "10! / (2!2!2!) = 151.200 (ada 3 huruf berulang: M, A, T)"
+                    explanation: "10! / (2!2!2!3!) = 151.200 (M:2, A:3, T:2, E:1, I:1, K:1)"
                 },
                 {
-                    question: "Dalam pertandingan 8 tim, berapa banyak pertandingan?",
-                    options: ["28", "36", "45", "56"],
+                    question: "Ada 5 warna bendera, berapa cara membuat sinyal dengan 3 bendera berurutan?",
+                    options: ["15", "60", "125", "243"],
+                    correct: 1,
+                    explanation: "Permutasi P(5,3) = 5×4×3 = 60 cara",
+                },
+                // 5 SOAL KOMBINASI
+                {
+                    question: "Dari 10 siswa, berapa cara memilih 3 siswa untuk jadi panitia?",
+                    options: ["30", "120", "720", "604800"],
+                    correct: 1,
+                    explanation: "Kombinasi C(10,3) = 120 cara"
+                },
+                {
+                    question: "Dalam sebuah tim basket, ada 12 pemain. Berapa cara memilih 5 starter?",
+                    options: ["60", "792", "95040", "248832"],
+                    correct: 1,
+                    explanation: "Kombinasi C(12,5) = 792 cara"
+                },
+                {
+                    question: "Dari 8 titik pada lingkaran, berapa banyak segitiga yang dapat dibentuk?",
+                    options: ["56", "336", "672", "40320"],
                     correct: 0,
-                    explanation: "Kombinasi C(8,2) = 28 pertandingan"
+                    explanation: "Kombinasi C(8,3) = 56 segitiga"
+                },
+                {
+                    question: "Ada 6 pria dan 4 wanita. Berapa cara memilih panitia 3 orang dengan minimal 1 wanita?",
+                    options: ["60", "100", "116", "120"],
+                    correct: 2,
+                    explanation: "Total C(10,3)=120, tanpa wanita C(6,3)=20, jadi 120-20=100"
+                },
+                {
+                    question: "Dalam kotak ada 7 bola berbeda. Berapa cara mengambil 4 bola sekaligus?",
+                    options: ["35", "840", "5040", "1680"],
+                    correct: 0,
+                    explanation: "Kombinasi C(7,4) = 35 cara"
                 }
             ],
             day2: [
@@ -1049,6 +1173,7 @@
             document.getElementById('materialContent').innerHTML = material.content;
             document.getElementById('materialOverlay').style.display = 'flex';
             document.getElementById('startDayBtn').disabled = true;
+            document.getElementById('nextQuestionBtn').style.display = 'none';
         }
 
         function continueToQuestions() {
@@ -1058,12 +1183,12 @@
             gameState.currentQuestion = 0;
             gameState.timeLeft = 30;
             
-            document.getElementById('nextQuestionBtn').disabled = false;
             showQuestion();
             startTimer();
             
-            // Schedule random student questions
-            scheduleStudentQuestions();
+            if (gameState.currentDay === 2 || gameState.currentDay === 3) {
+                scheduleStudentQuestions();
+            }
         }
 
         function showQuestion() {
@@ -1078,7 +1203,7 @@
             }
             
             document.getElementById('questionText').textContent = question.question;
-            document.getElementById('questionCounter').textContent = `Pertanyaan ${gameState.currentQuestion + 1}/5`;
+            document.getElementById('questionCounter').textContent = `Pertanyaan ${gameState.currentQuestion + 1}/${questions.length}`;
             
             const answerOptions = document.getElementById('answerOptions');
             answerOptions.innerHTML = '';
@@ -1123,7 +1248,11 @@
             }
             
             updateUI();
-            document.getElementById('nextQuestionBtn').disabled = false;
+            
+            clearTimeout(gameState.autoNextTimer);
+            gameState.autoNextTimer = setTimeout(() => {
+                nextQuestion();
+            }, 1500);
         }
 
         function nextQuestion() {
@@ -1135,7 +1264,6 @@
                 return;
             }
             
-            document.getElementById('nextQuestionBtn').disabled = true;
             gameState.timeLeft = 30;
             document.getElementById('timer').textContent = `⏰ ${gameState.timeLeft}s`;
             
@@ -1144,13 +1272,11 @@
         }
 
         function scheduleStudentQuestions() {
-            // Clear any existing timers
             if (window.studentQuestionTimer) {
                 clearTimeout(window.studentQuestionTimer);
             }
             
-            // Schedule random student question between 15-45 seconds
-            const delay = 15000 + Math.random() * 30000; // 15-45 seconds
+            const delay = 15000 + Math.random() * 30000;
             window.studentQuestionTimer = setTimeout(() => {
                 triggerStudentQuestion();
             }, delay);
@@ -1162,20 +1288,14 @@
             const dayQuestions = studentQuestions[`day${gameState.currentDay}`];
             if (!dayQuestions || dayQuestions.length === 0) return;
             
-            // Pick random student question
             const randomQuestion = dayQuestions[Math.floor(Math.random() * dayQuestions.length)];
             gameState.askingStudent = randomQuestion.student;
             gameState.studentQuestionActive = true;
             
-            // Update UI to show which student is asking
             updateStudentList();
-            
-            // Show indicator
             document.getElementById('questionStudent').textContent = gameState.askingStudent;
             document.getElementById('questionIndicator').style.display = 'block';
             document.getElementById('askBtn').disabled = false;
-            
-            // Highlight the asking student
             highlightAskingStudent();
         }
 
@@ -1196,10 +1316,8 @@
             
             if (!question) return;
             
-            // Pause the main timer
             stopTimer();
             
-            // Show student question overlay
             document.getElementById('studentQuestionContent').innerHTML = `
                 <h3>${question.student} bertanya:</h3>
                 <p style="font-size: 18px; margin: 10px 0;">"${question.question}"</p>
@@ -1226,14 +1344,10 @@
             const isCorrect = selectedIndex === question.correct;
             
             if (isCorrect) {
-                // Boost the asking student's score
                 studentScores[gameState.askingStudent] = Math.min(10, studentScores[gameState.askingStudent] + 0.5);
-                
-                // Give teacher score
                 gameState.teacherScore += 15;
                 gameState.studentQuestionsAnswered++;
                 gameState.patience = Math.min(100, gameState.patience + 10);
-                
                 showFeedback(`✅ Jawaban benar untuk ${gameState.askingStudent}! +15 Poin & nilai siswa naik!`, true);
             } else {
                 gameState.patience -= 10;
@@ -1248,7 +1362,6 @@
             document.getElementById('studentQuestionOverlay').style.display = 'none';
             document.getElementById('questionIndicator').style.display = 'none';
             
-            // Remove highlight from student
             const studentItems = document.querySelectorAll('.student-item');
             studentItems.forEach(item => {
                 item.classList.remove('has-question');
@@ -1257,8 +1370,7 @@
             gameState.studentQuestionActive = false;
             gameState.askingStudent = null;
             
-            // Resume timer and schedule next student question
-            if (gameState.gameActive) {
+            if (gameState.gameActive && (gameState.currentDay === 2 || gameState.currentDay === 3)) {
                 startTimer();
                 scheduleStudentQuestions();
             }
@@ -1268,26 +1380,26 @@
             gameState.gameActive = false;
             stopTimer();
             
-            // Clear student question timers
             if (window.studentQuestionTimer) {
                 clearTimeout(window.studentQuestionTimer);
             }
             
-            // Calculate day score
+            if (gameState.autoNextTimer) {
+                clearTimeout(gameState.autoNextTimer);
+            }
+            
             const questions = questionsData[`day${gameState.currentDay}`];
             const dayScore = Math.round((gameState.correctAnswers / questions.length) * 100);
             gameState.teacherScore += dayScore;
             
-            // Update day complete overlay
             document.getElementById('dayQuestionsAnswered').textContent = gameState.questionsAnswered;
+            document.getElementById('dayTotalQuestions').textContent = questions.length;
             document.getElementById('dayCorrectAnswers').textContent = gameState.correctAnswers;
             document.getElementById('dayStudentQuestions').textContent = gameState.studentQuestionsAnswered;
             document.getElementById('dayScore').textContent = dayScore;
             document.getElementById('totalTeacherScore').textContent = gameState.teacherScore;
             
-            // Show day complete overlay
             document.getElementById('dayCompleteOverlay').style.display = 'flex';
-            
             updateUI();
         }
 
@@ -1302,7 +1414,6 @@
                     startExamDay();
                 }, 2000);
             } else {
-                // Automatically go to next day
                 gameState.currentDay++;
                 gameState.currentQuestion = 0;
                 gameState.questionsAnswered = 0;
@@ -1314,11 +1425,9 @@
                 updateUI();
                 document.getElementById('questionText').textContent = `Hari ${gameState.currentDay} dimulai! Klik "Mulai Hari" untuk melanjutkan.`;
                 document.getElementById('startDayBtn').disabled = false;
-                document.getElementById('nextQuestionBtn').disabled = true;
-                document.getElementById('restartBtn').style.display = 'none';
                 document.getElementById('askBtn').disabled = true;
+                document.getElementById('restartBtn').style.display = 'none';
                 
-                // Auto-start the next day after 1 second
                 setTimeout(() => {
                     startDay();
                 }, 1000);
@@ -1354,7 +1463,11 @@
             const buttons = document.querySelectorAll('.answer-btn');
             buttons.forEach(btn => btn.disabled = true);
             
-            document.getElementById('nextQuestionBtn').disabled = false;
+            clearTimeout(gameState.autoNextTimer);
+            gameState.autoNextTimer = setTimeout(() => {
+                nextQuestion();
+            }, 1500);
+            
             updateUI();
         }
 
@@ -1367,7 +1480,6 @@
             document.getElementById('patienceValue').textContent = `${gameState.patience}%`;
             document.getElementById('moraleValue').textContent = gameState.morale;
             
-            // Update progress
             const questions = questionsData[`day${gameState.currentDay}`] || [];
             const permutasiProgress = Math.min(100, (gameState.correctAnswers / questions.length) * 100);
             document.getElementById('permutasiProgress').textContent = `${permutasiProgress.toFixed(0)}%`;
@@ -1377,11 +1489,9 @@
             
             document.getElementById('questionsAnswered').textContent = `${gameState.questionsAnswered}/${questions.length}`;
             
-            // Update teacher score
             document.getElementById('scoreValue').textContent = gameState.teacherScore;
             document.getElementById('teacherScore').style.display = 'block';
             
-            // Update student list
             updateStudentList();
             updateRanking();
         }
@@ -1394,12 +1504,10 @@
                 const div = document.createElement('div');
                 div.className = 'student-item';
                 
-                // Check if this student is asking a question
                 if (gameState.askingStudent === student) {
                     div.classList.add('has-question');
                 }
                 
-                // Check if student is caught/sent to BK
                 if (gameState.caughtStudents.includes(student)) {
                     div.classList.add('sent-bk');
                     div.innerHTML = `
@@ -1421,7 +1529,6 @@
                     `;
                 }
                 
-                // Add click handler for asking students
                 if (gameState.askingStudent === student) {
                     div.onclick = () => answerStudentQuestion();
                 }
@@ -1458,17 +1565,6 @@
             }, 3000);
         }
 
-        function showScoreFeedback(message) {
-            const feedback = document.getElementById('feedback');
-            feedback.textContent = message;
-            feedback.className = 'feedback score';
-            feedback.style.display = 'block';
-            
-            setTimeout(() => {
-                feedback.style.display = 'none';
-            }, 3000);
-        }
-
         // ========================
         // DAY 4 EXAM FUNCTIONS
         // ========================
@@ -1479,22 +1575,14 @@
             gameState.examTimeLeft = 120;
             gameState.remainingActions = 4;
             
-            // Calculate exam results
             calculateExamResults();
-            
-            // Hide main game
             document.querySelector('.main-grid').style.display = 'none';
             document.querySelector('.game-controls').style.display = 'none';
             
-            // Show exam overlay
             updateExamStats();
             document.getElementById('examOverlay').style.display = 'flex';
-            
-            // Show risk indicator
             document.getElementById('riskIndicator').style.display = 'block';
             updateRiskIndicator();
-            
-            // Start exam timer
             startExamTimer();
         }
 
@@ -1509,7 +1597,7 @@
                     clearInterval(gameState.examTimerInterval);
                     finishExam();
                 }
-            }, 1000); // 1 second per "minute" for gameplay purposes
+            }, 1000);
         }
 
         function updateExamTimeDisplay() {
@@ -1526,14 +1614,10 @@
             gameState.examResults = [];
             
             students.forEach(student => {
-                // Base score from learning
                 let baseScore = (studentScores[student] - 4.0) * 40;
                 baseScore = Math.max(0, Math.min(60, baseScore));
-                
-                // Random variation
                 const variation = (Math.random() - 0.5) * 40;
                 const examScore = Math.max(0, Math.min(100, baseScore + 40 + variation));
-                
                 const passed = examScore >= 60;
                 const cheating = gameState.cheatedStudents.includes(student);
                 
@@ -1548,17 +1632,13 @@
 
         function updateExamStats() {
             const results = gameState.examResults;
-            
-            // Average score
             const avgScore = results.reduce((sum, r) => sum + r.score, 0) / results.length;
             document.getElementById('examAvgScore').textContent = avgScore.toFixed(1);
             
-            // Pass rate
             const passedCount = results.filter(r => r.passed).length;
             const passRate = (passedCount / results.length) * 100;
             document.getElementById('examPassRate').textContent = `${passRate.toFixed(0)}%`;
             
-            // Risk
             const cheatingCount = results.filter(r => r.cheating).length;
             const risk = Math.min(100, gameState.riskLevel + (cheatingCount * 15));
             document.getElementById('examRisk').textContent = `${risk.toFixed(0)}%`;
@@ -1577,21 +1657,17 @@
                 return;
             }
             
-            // Consume 30 minutes
             gameState.examTimeLeft -= 30;
             gameState.remainingActions--;
             updateExamTimeDisplay();
             
             document.getElementById('examOverlay').style.display = 'none';
             document.getElementById('patrolOverlay').style.display = 'flex';
-            
             spawnTruantNPC();
         }
 
         function spawnTruantNPC() {
             const patrolContent = document.getElementById('patrolContent');
-            
-            // Select random NPC student (not main students)
             const randomNPC = npcStudents[Math.floor(Math.random() * npcStudents.length)];
             const randomScore = (3.0 + Math.random() * 2.0).toFixed(1);
             
@@ -1618,19 +1694,13 @@
 
         function sendNPCToBK(npcName) {
             gameState.teacherScore += 10;
-            showScoreFeedback(`✅ ${npcName} dikirim BK! +10 Skor Guru`);
-            
-            // Update UI
+            showFeedback(`✅ ${npcName} dikirim BK! +10 Skor Guru`, true);
             document.getElementById('scoreValue').textContent = gameState.teacherScore;
-            
-            // Show next NPC after delay
             setTimeout(spawnTruantNPC, 1000);
         }
 
         function ignoreNPC(npcName) {
             showFeedback(`⏭️ ${npcName} dibiarkan saja`, false);
-            
-            // Show next NPC after delay
             setTimeout(spawnTruantNPC, 1000);
         }
 
@@ -1646,7 +1716,6 @@
                 return;
             }
             
-            // Consume 30 minutes
             gameState.examTimeLeft -= 30;
             gameState.remainingActions--;
             updateExamTimeDisplay();
@@ -1688,8 +1757,6 @@
             clearInterval(gameState.examTimerInterval);
             
             const stats = updateExamStats();
-            
-            // Determine if cheating gets caught
             const cheatingCaught = Math.random() * 100 < stats.risk;
             let finalPassRate = stats.passRate;
             
@@ -1699,12 +1766,18 @@
                 finalPassRate *= 1.2;
             }
             
-            // Add teacher score bonus
             const scoreBonus = Math.floor(gameState.teacherScore / 10);
             finalPassRate += scoreBonus;
             
-            // Determine outcome
             const keepJob = finalPassRate >= 70 && !cheatingCaught;
+            
+            // Store final result for restart popup
+            gameState.finalResult = {
+                keepJob,
+                cheatingCaught,
+                stats,
+                finalPassRate
+            };
             
             showExamResults(keepJob, cheatingCaught, stats, finalPassRate);
         }
@@ -1715,9 +1788,6 @@
             const resultContainer = document.getElementById('resultContainer');
             const resultTitle = document.getElementById('resultTitle');
             const resultMessage = document.getElementById('resultMessage');
-            
-            // Show restart button
-            document.getElementById('restartBtn').style.display = 'block';
             
             if (keepJob) {
                 resultContainer.style.background = '#e8f5e9';
@@ -1744,7 +1814,6 @@
                 `;
             }
             
-            // Add details
             resultMessage.innerHTML += `
                 <hr style="margin: 20px 0;">
                 <h3>📊 Detail Hasil:</h3>
@@ -1754,13 +1823,117 @@
             `;
             
             document.getElementById('resultOverlay').style.display = 'flex';
+            
+            // Show restart popup after 2 seconds
+            setTimeout(() => {
+                showRestartPopup();
+            }, 2000);
+        }
+
+        // ========================
+        // RESTART POPUP FUNCTIONS
+        // ========================
+
+        function showRestartPopup() {
+            // Update high score if needed
+            if (gameState.teacherScore > highScore) {
+                highScore = gameState.teacherScore;
+                localStorage.setItem('mathTeacherHighScore', highScore);
+            }
+            
+            document.getElementById('highScoreValue').textContent = highScore;
+            
+            const restartTitle = document.getElementById('restartTitle');
+            if (gameState.finalResult && gameState.finalResult.keepJob) {
+                restartTitle.textContent = "🏆 SELAMAT! ANDA MENANG!";
+                restartTitle.style.color = "#FFD700";
+            } else {
+                restartTitle.textContent = "😢 GAME OVER - ANDA DIPECAT";
+                restartTitle.style.color = "#FF6B6B";
+            }
+            
+            const finalStats = document.getElementById('finalStats');
+            finalStats.innerHTML = `
+                <h3 style="margin-bottom: 10px;">📊 STATISTIK AKHIR</h3>
+                <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">
+                    Skor Akhir: <span style="color: #FFD700;">${gameState.teacherScore}</span>
+                </p>
+                ${gameState.finalResult ? `<p>Tingkat Kelulusan: <strong>${gameState.finalResult.finalPassRate.toFixed(0)}%</strong></p>` : ''}
+            `;
+            
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-item">
+                    <div>🏆 Skor Tertinggi</div>
+                    <div style="font-size: 20px; font-weight: bold;">${highScore}</div>
+                </div>
+                <div class="stat-item">
+                    <div>😊 Kesabaran Akhir</div>
+                    <div style="font-size: 20px; font-weight: bold;">${gameState.patience}%</div>
+                </div>
+                <div class="stat-item">
+                    <div>💪 Semangat Akhir</div>
+                    <div style="font-size: 20px; font-weight: bold;">${gameState.morale}</div>
+                </div>
+                <div class="stat-item">
+                    <div>✅ Jawaban Benar</div>
+                    <div style="font-size: 20px; font-weight: bold;">${gameState.correctAnswers}</div>
+                </div>
+            `;
+            
+            const achievementBadge = document.getElementById('achievementBadge');
+            if (gameState.teacherScore >= 300) {
+                achievementBadge.style.display = 'block';
+                if (gameState.teacherScore >= 400) {
+                    achievementBadge.innerHTML = `
+                        <h4>🏅 PENCAPAIAN TINGGI!</h4>
+                        <p>🎯 <strong>GRAND MASTER TEACHER</strong></p>
+                        <p>Skor: ${gameState.teacherScore}</p>
+                    `;
+                } else if (gameState.teacherScore >= 350) {
+                    achievementBadge.innerHTML = `
+                        <h4>🏅 PENCAPAIAN TINGGI!</h4>
+                        <p>⭐ <strong>EXPERT TEACHER</strong></p>
+                        <p>Skor: ${gameState.teacherScore}</p>
+                    `;
+                } else {
+                    achievementBadge.innerHTML = `
+                        <h4>🏅 PENCAPAIAN TINGGI!</h4>
+                        <p>👍 <strong>SKILLED TEACHER</strong></p>
+                        <p>Skor: ${gameState.teacherScore}</p>
+                    `;
+                }
+            } else {
+                achievementBadge.style.display = 'none';
+            }
+            
+            document.getElementById('restartPopup').style.display = 'flex';
+        }
+
+        function confirmRestart() {
+            document.getElementById('restartPopup').style.display = 'none';
+            document.getElementById('resultOverlay').style.display = 'none';
+            restartGame();
+        }
+
+        function declineRestart() {
+            document.getElementById('restartPopup').style.display = 'none';
+            
+            const resultMessage = document.getElementById('resultMessage');
+            resultMessage.innerHTML += `
+                <hr style="margin: 20px 0;">
+                <div style="text-align: center; padding: 20px; background: rgba(0,0,0,0.1); border-radius: 10px;">
+                    <h3>🙏 Terima Kasih Telah Bermain!</h3>
+                    <p>Skor Tertinggi Anda: <strong>${highScore}</strong></p>
+                    <p>Permainan telah berakhir. Refresh halaman untuk mulai baru.</p>
+                </div>
+            `;
         }
 
         function restartGame() {
-            // Hide result overlay
+            document.getElementById('restartPopup').style.display = 'none';
             document.getElementById('resultOverlay').style.display = 'none';
             
-            // Reset game state
             gameState.currentDay = 1;
             gameState.currentQuestion = 0;
             gameState.gameActive = false;
@@ -1781,34 +1954,33 @@
             gameState.iceCreamBought = false;
             gameState.examTimeLeft = 120;
             gameState.remainingActions = 4;
+            gameState.finalResult = null;
             
-            // Stop any running timers
             clearInterval(gameState.timerInterval);
             clearInterval(gameState.examTimerInterval);
             if (window.studentQuestionTimer) {
                 clearTimeout(window.studentQuestionTimer);
             }
+            if (gameState.autoNextTimer) {
+                clearTimeout(gameState.autoNextTimer);
+            }
             
-            // Reset student scores
             students.forEach(student => {
                 studentScores[student] = 4.0 + Math.random() * 1.5;
             });
             
-            // Hide overlays
             document.getElementById('riskIndicator').style.display = 'none';
             document.getElementById('dayCompleteOverlay').style.display = 'none';
             document.getElementById('questionIndicator').style.display = 'none';
             
-            // Show main game
             document.querySelector('.main-grid').style.display = 'grid';
             document.querySelector('.game-controls').style.display = 'flex';
             document.getElementById('examTimer').style.display = 'none';
             
-            // Reset UI
             updateUI();
             document.getElementById('questionText').textContent = "Selamat datang! Klik 'Mulai Hari' untuk memulai.";
             document.getElementById('startDayBtn').disabled = false;
-            document.getElementById('nextQuestionBtn').disabled = true;
+            document.getElementById('nextQuestionBtn').style.display = 'none';
             document.getElementById('restartBtn').style.display = 'none';
             document.getElementById('askBtn').disabled = true;
             
@@ -1818,10 +1990,20 @@
         function showHelp() {
             alert(`🎮 CARA BERMAIN:
             
-HARI 1-3: MENGAJAR
-1. Klik 'Mulai Hari' untuk belajar materi
-2. Jawab 5 pertanyaan sebelum waktu habis
-3. Siswa akan mengacungkan tangan untuk bertanya - jawab untuk bonus!
+HARI 1: PERMUTASI & KOMBINASI (10 SOAL)
+- 5 soal Permutasi + 5 soal Kombinasi
+- Soal langsung berganti otomatis setelah dijawab
+- Tidak ada pertanyaan siswa di hari 1
+
+HARI 2: PELUANG (5 SOAL)
+- Akan ada siswa yang bertanya
+- Soal langsung berganti otomatis setelah dijawab
+- Jawab pertanyaan siswa untuk bonus skor
+
+HARI 3: LIMIT FUNGSI (5 SOAL)
+- Akan ada siswa yang bertanya
+- Soal langsung berganti otomatis setelah dijawab
+- Jawab pertanyaan siswa untuk bonus skor
 
 HARI 4: UJIAN NASIONAL (2 JAM)
 1. Pilih PATROLI untuk menangkap siswa NPC bolos
@@ -1841,21 +2023,25 @@ HARI 4: UJIAN NASIONAL (2 JAM)
 
 📊 SKOR GURU:
 - Jawaban benar: +10
-- Jawab pertanyaan siswa: +15
+- Jawab pertanyaan siswa (hari 2-3): +15
 - Kirim siswa NPC ke BK: +10
 - Setiap 10 skor = +1% kelulusan
 
+🏆 HIGH SCORE:
+- Skor tertinggi Anda: ${highScore}
+- Skor disimpan di browser
+
 💡 TIPS:
-- Ajarkan dengan baik di hari 1-3
-- Jawab pertanyaan siswa untuk naikkan nilai mereka
-- Patroli untuk meningkatkan skor
-- Monitor waktu ujian`);
+- Hari 1: Fokus jawab soal dengan benar
+- Hari 2-3: Jawab pertanyaan siswa untuk naikkan nilai mereka
+- Hari 4: Patroli untuk meningkatkan skor`);
         }
 
         // Initialize game
         updateUI();
         updateStudentList();
         updateRanking();
+        document.getElementById('highScoreValue').textContent = highScore;
     </script>
 </body>
 </html>
