@@ -516,9 +516,55 @@
             padding: 10px;
             border-radius: 8px;
         }
+        
+        /* Difficulty Warning */
+        .difficulty-warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            z-index: 2001;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            display: none;
+        }
+        
+        .warning-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+    <!-- Difficulty Warning -->
+    <div class="difficulty-warning" id="difficultyWarning">
+        <div class="warning-icon">⚠️</div>
+        <h2>PERINGATAN TINGKAT KESULITAN!</h2>
+        <p style="margin: 15px 0; font-size: 18px;">
+            <strong>GAME INI SULIT!</strong>
+        </p>
+        <p style="margin: 10px 0;">
+            • Anda harus menjawab <strong>minimal 12 dari 20 soal</strong> dengan benar
+        </p>
+        <p style="margin: 10px 0;">
+            • Jika hanya 4-8 jawaban benar: <strong>DIPECAT!</strong>
+        </p>
+        <p style="margin: 10px 0;">
+            • Pertanyaan siswa akan muncul <strong>SANGAT CEPAT</strong>
+        </p>
+        <p style="margin: 20px 0; color: #FF6B6B;">
+            Siap untuk tantangan?
+        </p>
+        <button class="control-btn" onclick="closeWarning()" style="background: #FF9800; color: white;">
+            YA, SAYA SIAP!
+        </button>
+    </div>
+
     <!-- Risk Indicator -->
     <div class="risk-indicator" id="riskIndicator">
         🎲 Risiko: <span id="riskValue">30%</span>
@@ -526,7 +572,8 @@
 
     <!-- Teacher Score -->
     <div class="teacher-score" id="teacherScore">
-        📊 Skor Guru: <span id="scoreValue">0</span>
+        📊 Skor Guru: <span id="scoreValue">0</span><br>
+        ✅ Benar: <span id="totalCorrectValue">0</span>/20
     </div>
 
     <!-- Student Question Indicator -->
@@ -571,7 +618,7 @@
     <div class="game-container">
         <!-- Header -->
         <div class="game-header">
-            <h1>🎓 Math Teacher RPG</h1>
+            <h1>🎓 Math Teacher RPG - HARD MODE</h1>
             <div class="header-right">
                 <div class="day-counter" id="dayCounter">Hari 1/4</div>
                 <div class="topic-display" id="topicDisplay">Permutasi & Kombinasi</div>
@@ -591,7 +638,7 @@
             <!-- Center: Whiteboard -->
             <div class="whiteboard-container">
                 <div class="question-counter" id="questionCounter">Pertanyaan 1/10</div>
-                <div class="timer" id="timer">⏰ 30s</div>
+                <div class="timer" id="timer">⏰ 25s</div>
                 <div class="exam-timer" id="examTimer" style="display: none;">⏳ Ujian: 2:00</div>
                 <div class="question-text" id="questionText">
                     Selamat datang! Klik "Mulai Hari" untuk memulai pelajaran.
@@ -611,14 +658,15 @@
                 </div>
                 <div class="stats-box">
                     <h3>📊 Progress</h3>
-                    <div>Permutasi: <span id="permutasiProgress">0%</span></div>
-                    <div>Kombinasi: <span id="kombinasiProgress">0%</span></div>
-                    <div>Pertanyaan terjawab: <span id="questionsAnswered">0/10</span></div>
+                    <div>Total Benar: <span id="totalCorrectDisplay">0</span>/20</div>
+                    <div>Rata-rata: <span id="averageScore">0%</span></div>
+                    <div>Pertanyaan hari ini: <span id="questionsAnswered">0/10</span></div>
                 </div>
                 <div class="stats-box">
                     <h3>😊 Guru</h3>
                     <div>Kesabaran: <span id="patienceValue">100%</span></div>
                     <div>Semangat: <span id="moraleValue">100</span></div>
+                    <div>Status: <span id="teacherStatus">Baik</span></div>
                 </div>
             </div>
         </div>
@@ -680,6 +728,7 @@
                 <h3>📊 Hasil Hari Ini:</h3>
                 <p>Pertanyaan dijawab: <span id="dayQuestionsAnswered">0</span>/<span id="dayTotalQuestions">10</span></p>
                 <p>Jawaban benar: <span id="dayCorrectAnswers">0</span></p>
+                <p>Total Benar: <span id="totalCorrectSoFar">0</span>/<span id="totalQuestionsSoFar">10</span></p>
                 <p>Pertanyaan siswa terjawab: <span id="dayStudentQuestions">0</span></p>
                 <p>Skor hari ini: <span id="dayScore">0</span></p>
                 <p>Total Skor Guru: <span id="totalTeacherScore">0</span></p>
@@ -809,11 +858,13 @@
             currentQuestion: 0,
             gameActive: false,
             timerActive: false,
-            timeLeft: 30,
+            timeLeft: 25, // Reduced from 30
             timerInterval: null,
             autoNextTimer: null,
             questionsAnswered: 0,
             correctAnswers: 0,
+            totalCorrectAllDays: 0, // Track correct answers across all days
+            totalQuestionsAllDays: 0, // Track total questions
             patience: 100,
             knowledgePoints: 0,
             teacherScore: 0,
@@ -836,7 +887,17 @@
             // Game result state
             finalResult: null,
             finalPassRate: 0,
-            finalStats: null
+            finalStats: null,
+            
+            // Student question tracking
+            studentQuestionTimers: [],
+            questionDelay: 0,
+            
+            // Difficulty settings
+            difficulty: "HARD",
+            requiredCorrect: 12, // Need at least 12/20 correct
+            warningThreshold: 8, // If less than 8, automatic fail
+            perfectBonus: 18 // If 18+, big bonus
         };
 
         // High score system
@@ -1158,6 +1219,15 @@
         // CORE GAME FUNCTIONS
         // ========================
 
+        function showDifficultyWarning() {
+            document.getElementById('difficultyWarning').style.display = 'block';
+        }
+
+        function closeWarning() {
+            document.getElementById('difficultyWarning').style.display = 'none';
+            updateUI();
+        }
+
         function startDay() {
             if (gameState.currentDay === 4) {
                 startExamDay();
@@ -1181,7 +1251,7 @@
             
             gameState.gameActive = true;
             gameState.currentQuestion = 0;
-            gameState.timeLeft = 30;
+            gameState.timeLeft = 25; // Reduced timer
             
             showQuestion();
             startTimer();
@@ -1236,23 +1306,57 @@
             });
             
             gameState.questionsAnswered++;
+            gameState.totalQuestionsAllDays++;
+            
             if (isCorrect) {
                 gameState.correctAnswers++;
+                gameState.totalCorrectAllDays++;
                 gameState.knowledgePoints += 10;
                 gameState.teacherScore += 10;
                 gameState.patience = Math.min(100, gameState.patience + 5);
                 showFeedback("✅ Jawaban Benar! +10 Poin", true);
             } else {
-                gameState.patience -= 15;
-                showFeedback("❌ Jawaban Salah! -15 Kesabaran", false);
+                gameState.patience -= 20; // Increased penalty
+                if (gameState.patience <= 0) {
+                    gameState.patience = 0;
+                    showFeedback("😡 KESABARAN HABIS! -20 Kesabaran", false);
+                } else {
+                    showFeedback("❌ Jawaban Salah! -20 Kesabaran", false);
+                }
             }
             
             updateUI();
+            
+            // Check if performance is critically poor
+            checkCriticalPerformance();
             
             clearTimeout(gameState.autoNextTimer);
             gameState.autoNextTimer = setTimeout(() => {
                 nextQuestion();
             }, 1500);
+        }
+
+        function checkCriticalPerformance() {
+            const currentCorrectRate = (gameState.totalCorrectAllDays / gameState.totalQuestionsAllDays) * 100;
+            
+            if (gameState.totalQuestionsAllDays >= 5 && currentCorrectRate < 40) {
+                // Very poor performance
+                document.getElementById('teacherStatus').textContent = "KRITIS";
+                document.getElementById('teacherStatus').style.color = "#F44336";
+                
+                if (gameState.totalQuestionsAllDays >= 10 && currentCorrectRate < 30) {
+                    showFeedback("⚠️ PERINGATAN: Performa mengajar KRITIS!", false);
+                }
+            } else if (currentCorrectRate < 60) {
+                document.getElementById('teacherStatus').textContent = "Buruk";
+                document.getElementById('teacherStatus').style.color = "#FF9800";
+            } else if (currentCorrectRate < 75) {
+                document.getElementById('teacherStatus').textContent = "Cukup";
+                document.getElementById('teacherStatus').style.color = "#FFC107";
+            } else {
+                document.getElementById('teacherStatus').textContent = "Baik";
+                document.getElementById('teacherStatus').style.color = "#4CAF50";
+            }
         }
 
         function nextQuestion() {
@@ -1264,7 +1368,7 @@
                 return;
             }
             
-            gameState.timeLeft = 30;
+            gameState.timeLeft = 25; // Reduced timer
             document.getElementById('timer').textContent = `⏰ ${gameState.timeLeft}s`;
             
             showQuestion();
@@ -1272,14 +1376,48 @@
         }
 
         function scheduleStudentQuestions() {
-            if (window.studentQuestionTimer) {
-                clearTimeout(window.studentQuestionTimer);
+            // Clear any existing timers
+            clearAllStudentTimers();
+            
+            // Set question frequency based on day - MUCH FASTER
+            let baseDelay, randomRange;
+            
+            if (gameState.currentDay === 2) {
+                // Day 2: Questions come VERY frequently
+                baseDelay = 4000; // 4 seconds base
+                randomRange = 3000; // +/- 3 seconds random
+            } else if (gameState.currentDay === 3) {
+                // Day 3: Questions come EXTREMELY fast
+                baseDelay = 2000; // 2 seconds base
+                randomRange = 2000; // +/- 2 seconds random
             }
             
-            const delay = 15000 + Math.random() * 30000;
-            window.studentQuestionTimer = setTimeout(() => {
+            // Schedule first question immediately after starting
+            const immediateTimer = setTimeout(() => {
                 triggerStudentQuestion();
+                scheduleNextStudentQuestion(baseDelay, randomRange);
+            }, 1500); // First question appears after 1.5 seconds
+            
+            gameState.studentQuestionTimers.push(immediateTimer);
+        }
+
+        function scheduleNextStudentQuestion(baseDelay, randomRange) {
+            if (!gameState.gameActive || gameState.studentQuestionActive) return;
+            
+            const delay = baseDelay + Math.random() * randomRange;
+            const timer = setTimeout(() => {
+                if (!gameState.studentQuestionActive && gameState.gameActive) {
+                    triggerStudentQuestion();
+                    scheduleNextStudentQuestion(baseDelay, randomRange);
+                }
             }, delay);
+            
+            gameState.studentQuestionTimers.push(timer);
+        }
+
+        function clearAllStudentTimers() {
+            gameState.studentQuestionTimers.forEach(timer => clearTimeout(timer));
+            gameState.studentQuestionTimers = [];
         }
 
         function triggerStudentQuestion() {
@@ -1297,6 +1435,18 @@
             document.getElementById('questionIndicator').style.display = 'block';
             document.getElementById('askBtn').disabled = false;
             highlightAskingStudent();
+            
+            // Set auto timeout for student question (10 seconds - reduced)
+            const autoCloseTimer = setTimeout(() => {
+                if (gameState.studentQuestionActive) {
+                    gameState.patience -= 10; // Increased penalty
+                    studentScores[gameState.askingStudent] = Math.max(0, studentScores[gameState.askingStudent] - 0.3);
+                    showFeedback(`⏰ ${gameState.askingStudent} menunggu terlalu lama! -10 Kesabaran, nilai turun`, false);
+                    closeStudentQuestion();
+                }
+            }, 10000); // Reduced from 15 seconds
+            
+            gameState.studentQuestionTimers.push(autoCloseTimer);
         }
 
         function highlightAskingStudent() {
@@ -1350,8 +1500,9 @@
                 gameState.patience = Math.min(100, gameState.patience + 10);
                 showFeedback(`✅ Jawaban benar untuk ${gameState.askingStudent}! +15 Poin & nilai siswa naik!`, true);
             } else {
-                gameState.patience -= 10;
-                showFeedback(`❌ Jawaban salah untuk ${gameState.askingStudent}. -10 Kesabaran`, false);
+                gameState.patience -= 15; // Increased penalty
+                studentScores[gameState.askingStudent] = Math.max(0, studentScores[gameState.askingStudent] - 0.5);
+                showFeedback(`❌ Jawaban salah untuk ${gameState.askingStudent}. -15 Kesabaran, nilai siswa turun!`, false);
             }
             
             updateUI();
@@ -1372,17 +1523,13 @@
             
             if (gameState.gameActive && (gameState.currentDay === 2 || gameState.currentDay === 3)) {
                 startTimer();
-                scheduleStudentQuestions();
             }
         }
 
         function endDay() {
             gameState.gameActive = false;
             stopTimer();
-            
-            if (window.studentQuestionTimer) {
-                clearTimeout(window.studentQuestionTimer);
-            }
+            clearAllStudentTimers();
             
             if (gameState.autoNextTimer) {
                 clearTimeout(gameState.autoNextTimer);
@@ -1395,12 +1542,22 @@
             document.getElementById('dayQuestionsAnswered').textContent = gameState.questionsAnswered;
             document.getElementById('dayTotalQuestions').textContent = questions.length;
             document.getElementById('dayCorrectAnswers').textContent = gameState.correctAnswers;
+            document.getElementById('totalCorrectSoFar').textContent = gameState.totalCorrectAllDays;
+            document.getElementById('totalQuestionsSoFar').textContent = gameState.totalQuestionsAllDays;
             document.getElementById('dayStudentQuestions').textContent = gameState.studentQuestionsAnswered;
             document.getElementById('dayScore').textContent = dayScore;
             document.getElementById('totalTeacherScore').textContent = gameState.teacherScore;
             
             document.getElementById('dayCompleteOverlay').style.display = 'flex';
             updateUI();
+            
+            // Check if performance is too poor to continue
+            if (gameState.totalQuestionsAllDays >= 10) {
+                const correctRate = (gameState.totalCorrectAllDays / gameState.totalQuestionsAllDays) * 100;
+                if (correctRate < 30) {
+                    showFeedback("⚠️ PERINGATAN: Performa Anda sangat buruk! Risiko dipecat tinggi!", false);
+                }
+            }
         }
 
         function autoNextDay() {
@@ -1438,7 +1595,7 @@
             if (gameState.timerActive) return;
             
             gameState.timerActive = true;
-            gameState.timeLeft = 30;
+            gameState.timeLeft = 25; // Reduced timer
             
             gameState.timerInterval = setInterval(() => {
                 gameState.timeLeft--;
@@ -1457,8 +1614,8 @@
 
         function timeUp() {
             stopTimer();
-            gameState.patience -= 20;
-            showFeedback("⏰ Waktu habis! -20 Kesabaran", false);
+            gameState.patience -= 25; // Increased penalty
+            showFeedback("⏰ Waktu habis! -25 Kesabaran", false);
             
             const buttons = document.querySelectorAll('.answer-btn');
             buttons.forEach(btn => btn.disabled = true);
@@ -1481,19 +1638,23 @@
             document.getElementById('moraleValue').textContent = gameState.morale;
             
             const questions = questionsData[`day${gameState.currentDay}`] || [];
-            const permutasiProgress = Math.min(100, (gameState.correctAnswers / questions.length) * 100);
-            document.getElementById('permutasiProgress').textContent = `${permutasiProgress.toFixed(0)}%`;
-            
-            const kombinasiProgress = Math.min(100, (gameState.knowledgePoints / 50) * 100);
-            document.getElementById('kombinasiProgress').textContent = `${kombinasiProgress.toFixed(0)}%`;
-            
             document.getElementById('questionsAnswered').textContent = `${gameState.questionsAnswered}/${questions.length}`;
+            
+            // Update total correct display
+            document.getElementById('totalCorrectDisplay').textContent = `${gameState.totalCorrectAllDays}/20`;
+            document.getElementById('totalCorrectValue').textContent = gameState.totalCorrectAllDays;
+            
+            // Calculate average score
+            const average = gameState.totalQuestionsAllDays > 0 ? 
+                Math.round((gameState.totalCorrectAllDays / gameState.totalQuestionsAllDays) * 100) : 0;
+            document.getElementById('averageScore').textContent = `${average}%`;
             
             document.getElementById('scoreValue').textContent = gameState.teacherScore;
             document.getElementById('teacherScore').style.display = 'block';
             
             updateStudentList();
             updateRanking();
+            checkCriticalPerformance();
         }
 
         function updateStudentList() {
@@ -1614,10 +1775,28 @@
             gameState.examResults = [];
             
             students.forEach(student => {
-                let baseScore = (studentScores[student] - 4.0) * 40;
+                // Base score depends on teaching quality (correct answers)
+                const teachingQuality = Math.min(1, gameState.totalCorrectAllDays / 20);
+                let baseScore = (studentScores[student] - 4.0) * 40 * teachingQuality;
                 baseScore = Math.max(0, Math.min(60, baseScore));
+                
+                // If teaching was poor, students perform worse
                 const variation = (Math.random() - 0.5) * 40;
-                const examScore = Math.max(0, Math.min(100, baseScore + 40 + variation));
+                let examScore = Math.max(0, Math.min(100, baseScore + 40 + variation));
+                
+                // Apply penalty for poor teaching
+                if (gameState.totalCorrectAllDays < gameState.warningThreshold) {
+                    examScore *= 0.6; // 40% penalty for very poor teaching
+                } else if (gameState.totalCorrectAllDays < gameState.requiredCorrect) {
+                    examScore *= 0.8; // 20% penalty for poor teaching
+                }
+                
+                // Bonus for excellent teaching
+                if (gameState.totalCorrectAllDays >= gameState.perfectBonus) {
+                    examScore *= 1.2; // 20% bonus for excellent teaching
+                    examScore = Math.min(100, examScore);
+                }
+                
                 const passed = examScore >= 60;
                 const cheating = gameState.cheatedStudents.includes(student);
                 
@@ -1639,11 +1818,27 @@
             const passRate = (passedCount / results.length) * 100;
             document.getElementById('examPassRate').textContent = `${passRate.toFixed(0)}%`;
             
+            // Calculate risk based on teaching performance
+            const correctRate = (gameState.totalCorrectAllDays / 20) * 100;
+            let risk = 30; // Base risk
+            
+            if (correctRate < 40) {
+                risk = 80; // High risk for very poor teaching
+            } else if (correctRate < 60) {
+                risk = 60; // Medium risk for poor teaching
+            } else if (correctRate < 75) {
+                risk = 40; // Moderate risk for average teaching
+            } else {
+                risk = 20; // Low risk for good teaching
+            }
+            
             const cheatingCount = results.filter(r => r.cheating).length;
-            const risk = Math.min(100, gameState.riskLevel + (cheatingCount * 15));
+            risk = Math.min(100, risk + (cheatingCount * 20)); // Increased penalty for cheating
+            
+            gameState.riskLevel = risk;
             document.getElementById('examRisk').textContent = `${risk.toFixed(0)}%`;
             
-            return { avgScore, passRate, risk, cheatingCount };
+            return { avgScore, passRate, risk, cheatingCount, correctRate };
         }
 
         function updateRiskIndicator() {
@@ -1757,32 +1952,80 @@
             clearInterval(gameState.examTimerInterval);
             
             const stats = updateExamStats();
-            const cheatingCaught = Math.random() * 100 < stats.risk;
-            let finalPassRate = stats.passRate;
             
-            if (cheatingCaught) {
-                finalPassRate *= 0.7;
-            } else if (gameState.cheatedStudents.length > 0) {
-                finalPassRate *= 1.2;
+            // Check if teaching was too poor
+            let keepJob = true;
+            let reason = "";
+            
+            // AUTOMATIC FAILURE CONDITIONS:
+            if (gameState.totalCorrectAllDays <= 4) {
+                // If only 4 or fewer correct answers out of 20
+                keepJob = false;
+                reason = "Hanya " + gameState.totalCorrectAllDays + " jawaban benar dari 20 soal. Mengajar buruk!";
+            } else if (gameState.totalCorrectAllDays < gameState.warningThreshold) {
+                // If less than warning threshold (8)
+                keepJob = false;
+                reason = gameState.totalCorrectAllDays + " jawaban benar dari 20. Performa mengajar tidak memadai!";
+            } else if (stats.passRate < 50) {
+                // If pass rate is below 50%
+                keepJob = false;
+                reason = "Tingkat kelulusan hanya " + stats.passRate.toFixed(0) + "%. Siswa tidak siap ujian!";
+            } else if (stats.risk > 70) {
+                // If risk is too high
+                keepJob = false;
+                reason = "Risiko dipecat terlalu tinggi (" + stats.risk.toFixed(0) + "%)";
             }
             
+            // Check cheating
+            const cheatingCaught = Math.random() * 100 < stats.risk;
+            if (cheatingCaught && gameState.cheatedStudents.length > 0) {
+                keepJob = false;
+                reason = "Ketahuan memberi contekan! " + gameState.cheatedStudents.length + " siswa ketahuan mencontek.";
+            }
+            
+            // Calculate final pass rate with adjustments
+            let finalPassRate = stats.passRate;
+            
+            // Apply bonuses/penalties based on teaching quality
+            if (gameState.totalCorrectAllDays >= gameState.perfectBonus) {
+                finalPassRate += 20; // Big bonus for excellent teaching
+            } else if (gameState.totalCorrectAllDays >= gameState.requiredCorrect) {
+                finalPassRate += 10; // Good bonus for meeting requirements
+            } else if (gameState.totalCorrectAllDays >= gameState.warningThreshold) {
+                finalPassRate -= 10; // Penalty for borderline performance
+            } else {
+                finalPassRate -= 30; // Severe penalty for poor performance
+            }
+            
+            // Apply score bonus
             const scoreBonus = Math.floor(gameState.teacherScore / 10);
             finalPassRate += scoreBonus;
             
-            const keepJob = finalPassRate >= 70 && !cheatingCaught;
+            // Final check: must have at least required correct answers AND decent pass rate
+            if (keepJob && gameState.totalCorrectAllDays >= gameState.requiredCorrect && finalPassRate >= 70) {
+                keepJob = true;
+            } else if (keepJob) {
+                keepJob = false;
+                if (gameState.totalCorrectAllDays < gameState.requiredCorrect) {
+                    reason = "Hanya " + gameState.totalCorrectAllDays + " jawaban benar (minimum 12 diperlukan).";
+                } else {
+                    reason = "Tingkat kelulusan hanya " + finalPassRate.toFixed(0) + "% (minimum 70% diperlukan).";
+                }
+            }
             
             // Store final result for restart popup
             gameState.finalResult = {
                 keepJob,
                 cheatingCaught,
                 stats,
-                finalPassRate
+                finalPassRate,
+                reason
             };
             
-            showExamResults(keepJob, cheatingCaught, stats, finalPassRate);
+            showExamResults(keepJob, cheatingCaught, stats, finalPassRate, reason);
         }
 
-        function showExamResults(keepJob, cheatingCaught, stats, finalPassRate) {
+        function showExamResults(keepJob, cheatingCaught, stats, finalPassRate, reason) {
             document.getElementById('examOverlay').style.display = 'none';
             
             const resultContainer = document.getElementById('resultContainer');
@@ -1791,34 +2034,47 @@
             
             if (keepJob) {
                 resultContainer.style.background = '#e8f5e9';
-                resultTitle.textContent = "🎉 SELAMAT!";
+                resultTitle.textContent = "🎉 SELAMAT! ANDA TETAP JADI GURU!";
                 resultTitle.style.color = "#2E7D32";
                 resultMessage.innerHTML = `
-                    <p><strong>Anda tetap menjadi guru!</strong></p>
-                    <p>Skor Akhir: ${gameState.teacherScore}</p>
-                    <p>Tingkat kelulusan: ${finalPassRate.toFixed(0)}%</p>
-                    ${cheatingCaught ? "<p>Meski ada masalah, kepala sekolah memaafkan Anda.</p>" : 
-                      gameState.cheatedStudents.length > 0 ? "<p>Bantuan Anda berhasil tanpa ketahuan!</p>" : 
-                      "<p>Siswa lulus dengan kemampuan sendiri.</p>"}
+                    <p><strong>Anda berhasil mempertahankan pekerjaan!</strong></p>
+                    <p>📊 <strong>Statistik Akhir:</strong></p>
+                    <p>✅ Jawaban Benar: ${gameState.totalCorrectAllDays}/20 (${Math.round((gameState.totalCorrectAllDays/20)*100)}%)</p>
+                    <p>🎓 Tingkat Kelulusan: ${finalPassRate.toFixed(0)}%</p>
+                    <p>🏆 Skor Guru: ${gameState.teacherScore}</p>
+                    ${cheatingCaught ? "<p>⚠️ Ada masalah kecil, tapi kepala sekolah memaafkan Anda.</p>" : 
+                      gameState.totalCorrectAllDays >= gameState.perfectBonus ? 
+                      "<p>🌟 <strong>PERFORMAN LUAR BIASA!</strong> Mengajar sempurna!</p>" : 
+                      gameState.totalCorrectAllDays >= gameState.requiredCorrect ?
+                      "<p>👍 <strong>Kinerja baik!</strong> Anda memenuhi standar minimum.</p>" : ""}
                 `;
             } else {
                 resultContainer.style.background = '#ffebee';
-                resultTitle.textContent = "😢 DIPECAT!";
+                resultTitle.textContent = "😢 ANDA DIPECAT!";
                 resultTitle.style.color = "#C62828";
                 resultMessage.innerHTML = `
-                    <p><strong>Anda dipecat dari sekolah!</strong></p>
-                    <p>Skor Akhir: ${gameState.teacherScore}</p>
+                    <p><strong>Kepala sekolah memutuskan untuk memecat Anda!</strong></p>
+                    <p>📉 <strong>Alasan:</strong> ${reason}</p>
+                    <p>📊 <strong>Statistik Akhir:</strong></p>
+                    <p>✅ Jawaban Benar: ${gameState.totalCorrectAllDays}/20 (${Math.round((gameState.totalCorrectAllDays/20)*100)}%)</p>
+                    <p>❌ Minimum diperlukan: 12/20 (60%)</p>
+                    <p>🎓 Tingkat Kelulusan: ${finalPassRate.toFixed(0)}%</p>
+                    <p>🏆 Skor Guru: ${gameState.teacherScore}</p>
                     ${cheatingCaught ? 
-                    `<p>⛔ Ketahuan memberi contekan! ${gameState.cheatedStudents.length} siswa ketahuan mencontek.</p>` : 
-                    `<p>📉 Tingkat kelulusan hanya ${finalPassRate.toFixed(0)}%, di bawah standar 70%.</p>`}
+                    `<p>⛔ <strong>Ketahuan memberi contekan!</strong> ${gameState.cheatedStudents.length} siswa ketahuan mencontek.</p>` : 
+                    gameState.totalCorrectAllDays <= 4 ?
+                    `<p>💀 <strong>KINERJA BENCANA!</strong> Hanya ${gameState.totalCorrectAllDays} jawaban benar dari 20 soal.</p>` :
+                    gameState.totalCorrectAllDays < 8 ?
+                    `<p>⚠️ <strong>Mengajar sangat buruk!</strong> Siswa tidak belajar apa-apa.</p>` : ""}
                 `;
             }
             
             resultMessage.innerHTML += `
                 <hr style="margin: 20px 0;">
-                <h3>📊 Detail Hasil:</h3>
-                <p>Rata-rata nilai: ${stats.avgScore.toFixed(1)}</p>
-                <p>Semangat guru: ${gameState.morale}</p>
+                <h3>📋 Detail Hasil Ujian:</h3>
+                <p>Rata-rata nilai siswa: ${stats.avgScore.toFixed(1)}</p>
+                <p>Semangat guru akhir: ${gameState.morale}</p>
+                <p>Kesabaran akhir: ${gameState.patience}%</p>
                 ${gameState.caughtStudents.length > 0 ? `<p>Siswa dikirim BK: ${gameState.caughtStudents.length} orang</p>` : ''}
             `;
             
@@ -1856,7 +2112,10 @@
             finalStats.innerHTML = `
                 <h3 style="margin-bottom: 10px;">📊 STATISTIK AKHIR</h3>
                 <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">
-                    Skor Akhir: <span style="color: #FFD700;">${gameState.teacherScore}</span>
+                    Jawaban Benar: <span style="color: #FFD700;">${gameState.totalCorrectAllDays}/20</span>
+                </p>
+                <p style="font-size: 20px; margin: 10px 0;">
+                    Skor Akhir: <strong>${gameState.teacherScore}</strong>
                 </p>
                 ${gameState.finalResult ? `<p>Tingkat Kelulusan: <strong>${gameState.finalResult.finalPassRate.toFixed(0)}%</strong></p>` : ''}
             `;
@@ -1877,32 +2136,32 @@
                 </div>
                 <div class="stat-item">
                     <div>✅ Jawaban Benar</div>
-                    <div style="font-size: 20px; font-weight: bold;">${gameState.correctAnswers}</div>
+                    <div style="font-size: 20px; font-weight: bold;">${gameState.totalCorrectAllDays}/20</div>
                 </div>
             `;
             
             const achievementBadge = document.getElementById('achievementBadge');
-            if (gameState.teacherScore >= 300) {
+            if (gameState.totalCorrectAllDays >= 18) {
                 achievementBadge.style.display = 'block';
-                if (gameState.teacherScore >= 400) {
-                    achievementBadge.innerHTML = `
-                        <h4>🏅 PENCAPAIAN TINGGI!</h4>
-                        <p>🎯 <strong>GRAND MASTER TEACHER</strong></p>
-                        <p>Skor: ${gameState.teacherScore}</p>
-                    `;
-                } else if (gameState.teacherScore >= 350) {
-                    achievementBadge.innerHTML = `
-                        <h4>🏅 PENCAPAIAN TINGGI!</h4>
-                        <p>⭐ <strong>EXPERT TEACHER</strong></p>
-                        <p>Skor: ${gameState.teacherScore}</p>
-                    `;
-                } else {
-                    achievementBadge.innerHTML = `
-                        <h4>🏅 PENCAPAIAN TINGGI!</h4>
-                        <p>👍 <strong>SKILLED TEACHER</strong></p>
-                        <p>Skor: ${gameState.teacherScore}</p>
-                    `;
-                }
+                achievementBadge.innerHTML = `
+                    <h4>🏅 GURU TERBAIK!</h4>
+                    <p>🎯 <strong>PERFORMAN SEMPURNA</strong></p>
+                    <p>${gameState.totalCorrectAllDays}/20 jawaban benar!</p>
+                `;
+            } else if (gameState.totalCorrectAllDays >= 15) {
+                achievementBadge.style.display = 'block';
+                achievementBadge.innerHTML = `
+                    <h4>🏅 PENCAPAIAN TINGGI!</h4>
+                    <p>⭐ <strong>GURU HEBAT</strong></p>
+                    <p>${gameState.totalCorrectAllDays}/20 jawaban benar!</p>
+                `;
+            } else if (gameState.totalCorrectAllDays >= 12) {
+                achievementBadge.style.display = 'block';
+                achievementBadge.innerHTML = `
+                    <h4>🎖️ PENCAPAIAN BAIK!</h4>
+                    <p>👍 <strong>GURU KOMPETEN</strong></p>
+                    <p>${gameState.totalCorrectAllDays}/20 jawaban benar!</p>
+                `;
             } else {
                 achievementBadge.style.display = 'none';
             }
@@ -1925,9 +2184,14 @@
                 <div style="text-align: center; padding: 20px; background: rgba(0,0,0,0.1); border-radius: 10px;">
                     <h3>🙏 Terima Kasih Telah Bermain!</h3>
                     <p>Skor Tertinggi Anda: <strong>${highScore}</strong></p>
+                    <p>Jawaban Benar Terbaik: <strong>${Math.max(gameState.totalCorrectAllDays, localStorage.getItem('mathTeacherBestCorrect') || 0)}/20</strong></p>
                     <p>Permainan telah berakhir. Refresh halaman untuk mulai baru.</p>
                 </div>
             `;
+            
+            // Save best correct answers
+            const bestCorrect = Math.max(gameState.totalCorrectAllDays, localStorage.getItem('mathTeacherBestCorrect') || 0);
+            localStorage.setItem('mathTeacherBestCorrect', bestCorrect);
         }
 
         function restartGame() {
@@ -1940,6 +2204,8 @@
             gameState.timerActive = false;
             gameState.questionsAnswered = 0;
             gameState.correctAnswers = 0;
+            gameState.totalCorrectAllDays = 0;
+            gameState.totalQuestionsAllDays = 0;
             gameState.patience = 100;
             gameState.knowledgePoints = 0;
             gameState.teacherScore = 0;
@@ -1958,9 +2224,7 @@
             
             clearInterval(gameState.timerInterval);
             clearInterval(gameState.examTimerInterval);
-            if (window.studentQuestionTimer) {
-                clearTimeout(window.studentQuestionTimer);
-            }
+            clearAllStudentTimers();
             if (gameState.autoNextTimer) {
                 clearTimeout(gameState.autoNextTimer);
             }
@@ -1984,57 +2248,57 @@
             document.getElementById('restartBtn').style.display = 'none';
             document.getElementById('askBtn').disabled = true;
             
-            showFeedback("🔄 Permainan dimulai ulang!", true);
+            showFeedback("🔄 Permainan dimulai ulang! Cobalah lebih baik kali ini!", true);
+            showDifficultyWarning();
         }
 
         function showHelp() {
-            alert(`🎮 CARA BERMAIN:
-            
-HARI 1: PERMUTASI & KOMBINASI (10 SOAL)
-- 5 soal Permutasi + 5 soal Kombinasi
-- Soal langsung berganti otomatis setelah dijawab
-- Tidak ada pertanyaan siswa di hari 1
+            alert(`🎮 CARA BERMAIN - MODE SULIT ⚠️
 
-HARI 2: PELUANG (5 SOAL)
-- Akan ada siswa yang bertanya
-- Soal langsung berganti otomatis setelah dijawab
-- Jawab pertanyaan siswa untuk bonus skor
+🏆 TUJUAN:
+- Menjawab minimal 12 dari 20 soal dengan benar
+- Menghasilkan tingkat kelulusan minimal 70%
+- Tidak ketahuan memberi contekan
 
-HARI 3: LIMIT FUNGSI (5 SOAL)
-- Akan ada siswa yang bertanya
-- Soal langsung berganti otomatis setelah dijawab
-- Jawab pertanyaan siswa untuk bonus skor
+📊 SISTEM PENILAIAN:
+- Total 20 soal (Hari 1:10, Hari 2:5, Hari 3:5)
+- Minimal 12 benar untuk lolos standar
+- Jika < 8 benar: OTOMATIS DIPECAT!
+- Jika < 12 benar: Risiko tinggi dipecat
 
-HARI 4: UJIAN NASIONAL (2 JAM)
-1. Pilih PATROLI untuk menangkap siswa NPC bolos
-   - Kirim ke BK: +10 Skor Guru
-   - Biarkan: Tidak ada efek
-   
-2. Pilih JALAN-JALAN untuk beli es krim
-   - Tingkatkan semangat guru
-   
-3. Setiap aksi menghabiskan 30 menit
-   - Total 4 aksi tersedia
+⏰ PERUBAHAN KESULITAN:
+- Waktu soal: 25 detik (dari 30)
+- Penalti salah: -20 kesabaran (dari 15)
+- Pertanyaan siswa: SANGAT CEPAT (2-7 detik)
+- Waktu tunggu siswa: 10 detik (dari 15)
 
-4. Hasil ujian menentukan nasib karir:
-   - Kelulusan > 70% = tetap jadi guru
-   - Ketahuan memberi contekan = langsung dipecat!
-   - Skor Guru mempengaruhi kelulusan
+📈 PENGARUH JAWABAN BENAR:
+- 0-4 benar: DIPECAT OTOMATIS
+- 5-7 benar: Risiko sangat tinggi
+- 8-11 benar: Risiko tinggi
+- 12-14 benar: Standar minimum
+- 15-17 benar: Kinerja baik
+- 18-20 benar: Kinerja sempurna + bonus
 
-📊 SKOR GURU:
-- Jawaban benar: +10
-- Jawab pertanyaan siswa (hari 2-3): +15
-- Kirim siswa NPC ke BK: +10
-- Setiap 10 skor = +1% kelulusan
+🎓 HARI 4 - UJIAN NASIONAL:
+- Nilai siswa tergantung kualitas mengajar Anda
+- Jika Anda banyak salah, nilai siswa turun drastis
+- Patroli: +10 skor per siswa NPC
+- Jalan-jalan: Tingkatkan semangat
+
+💡 TIPS UNTUK MENANG:
+1. Fokus jawab soal dengan BENAR, bukan cepat
+2. Jawab pertanyaan siswa untuk naikkan nilai mereka
+3. Jaga kesabaran di atas 30%
+4. Targetkan minimal 3 benar per hari
+5. Hari 1 sangat penting (10 soal!)
 
 🏆 HIGH SCORE:
-- Skor tertinggi Anda: ${highScore}
+- Skor tertinggi: ${highScore}
 - Skor disimpan di browser
 
-💡 TIPS:
-- Hari 1: Fokus jawab soal dengan benar
-- Hari 2-3: Jawab pertanyaan siswa untuk naikkan nilai mereka
-- Hari 4: Patroli untuk meningkatkan skor`);
+⚠️ PERINGATAN:
+Game ini SANGAT SULIT! Hanya guru terbaik yang akan bertahan!`);
         }
 
         // Initialize game
@@ -2042,6 +2306,11 @@ HARI 4: UJIAN NASIONAL (2 JAM)
         updateStudentList();
         updateRanking();
         document.getElementById('highScoreValue').textContent = highScore;
+        
+        // Show difficulty warning on load
+        setTimeout(() => {
+            showDifficultyWarning();
+        }, 1000);
     </script>
 </body>
 </html>
