@@ -3,199 +3,484 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Teacher RPG - Ujian Nasional</title>
+    <title>Math Teacher RPG - Dreamy Classroom Adventure</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Quicksand:wght@400;600;700&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #0A3323 0%, #839958 100%);
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #ffd6e7 0%, #c1f0ff 100%);
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
         }
 
+        /* Animated Background Elements */
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-1000px) rotate(360deg); }
+        }
+
+        /* Main Game Container */
         .game-container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(255, 150, 200, 0.4),
+                        0 0 0 15px #ffb8d9,
+                        0 0 0 25px #a6e3ff;
             overflow: hidden;
+            position: relative;
+            z-index: 1;
+            border: 8px solid #ff9acd;
         }
 
         /* Header */
         .game-header {
-            background: linear-gradient(90deg, #F7F4D5, #D3968C);
-            color: white;
-            padding: 20px;
+            background: linear-gradient(90deg, #ffb8d9, #a6e3ff);
+            color: #5a3d5c;
+            padding: 25px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 8px dotted #ff9acd;
+            position: relative;
         }
 
-        .day-counter {
-            font-size: 24px;
-            font-weight: bold;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px 20px;
+        .header-content {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .game-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #5a3d5c;
+            text-shadow: 3px 3px 0 #ffde59;
+            margin-bottom: 10px;
+        }
+
+        .title-decoration {
+            font-size: 2rem;
+            color: #ff6ba9;
+            animation: spin 4s infinite linear;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .day-info {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .day-badge {
+            background: linear-gradient(145deg, #ffde59, #ffb347);
+            padding: 10px 25px;
             border-radius: 50px;
-        }
-
-        .topic-display {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        /* Main Grid */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            gap: 20px;
-            padding: 20px;
-            min-height: 500px;
-        }
-
-        /* Left Column */
-        .classroom-section {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 20px;
-            border: 3px solid #4CAF50;
-        }
-
-        .student-item {
-            background: white;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 8px;
-            border: 2px solid #ddd;
-            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 5px 0 #ff8a00;
+            border: 4px solid white;
             transition: all 0.3s;
         }
 
-        .student-item:hover {
-            transform: translateX(5px);
-            border-color: #000000;
+        .day-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 0 #ff8a00;
         }
 
-        .student-item.truant {
-            background: #fff3e0;
-            border-color: #FF9800;
-        }
-
-        .student-item.sent-bk {
-            background: #e8f5e9;
-            border-color: #4CAF50;
-        }
-
-        .student-item.has-question {
-            background: #e3f2fd;
-            border-color: #2196F3;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(33, 150, 243, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); }
-        }
-
-        /* Center Column */
-        .whiteboard-container {
-            background: #105666;
-            border-radius: 10px;
-            padding: 20px;
+        .topic-badge {
+            background: linear-gradient(145deg, #a6e3ff, #6bcbff);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
             color: white;
+            box-shadow: 0 5px 0 #0099ff;
+            border: 4px solid white;
+            transition: all 0.3s;
+        }
+
+        .topic-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 0 #0099ff;
+        }
+
+        /* Main Game Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 25px;
+            padding: 25px;
+            min-height: 600px;
+        }
+
+        /* Classroom Section - Left */
+        .classroom-section {
+            background: linear-gradient(145deg, #fff9e6, #fff0cc);
+            border-radius: 25px;
+            padding: 20px;
+            border: 6px solid #ffde59;
+            box-shadow: 0 10px 30px rgba(255, 222, 89, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .classroom-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 10px 10px, #ffde59 2px, transparent 3px);
+            background-size: 30px 30px;
+            opacity: 0.1;
+        }
+
+        .section-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.8rem;
+            color: #ff6ba9;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 4px dotted #ffde59;
+            position: relative;
+        }
+
+        .section-title i {
+            margin-right: 10px;
+            animation: wiggle 2s infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        .student-container {
+            display: grid;
+            gap: 12px;
+        }
+
+        .student-card {
+            background: white;
+            padding: 15px;
+            border-radius: 20px;
+            border: 4px solid;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .student-card:hover {
+            transform: translateX(10px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .student-card.asking {
+            animation: studentQuestion 1s infinite;
+            border-color: #6bcbff;
+            background: linear-gradient(145deg, #e3f2ff, #bbdefb);
+        }
+
+        @keyframes studentQuestion {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ffb8d9, #a6e3ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 3px solid white;
+            box-shadow: 0 3px 0 #ff9acd;
+        }
+
+        .student-info {
+            flex-grow: 1;
+        }
+
+        .student-name {
+            font-weight: 700;
+            color: #5a3d5c;
+            font-size: 1.1rem;
+        }
+
+        .student-score {
+            font-size: 0.9rem;
+            color: #ff6ba9;
+            font-weight: 600;
+        }
+
+        .student-status {
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .status-truant { background: #ff9800; }
+        .status-bk { background: #4CAF50; }
+
+        /* Whiteboard Section - Center */
+        .whiteboard-section {
+            background: linear-gradient(145deg, #2c3e50, #34495e);
+            border-radius: 25px;
+            padding: 25px;
+            border: 8px solid #ffde59;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .whiteboard-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(90deg, transparent 98%, rgba(255,255,255,0.1) 100%),
+                linear-gradient(0deg, transparent 98%, rgba(255,255,255,0.1) 100%);
+            background-size: 50px 50px;
+            opacity: 0.2;
+        }
+
+        .question-display {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            min-height: 150px;
+            margin-bottom: 25px;
+            border: 5px solid #ffde59;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
             position: relative;
         }
 
         .question-text {
-            font-size: 18px;
-            line-height: 1.5;
-            margin: 20px 0;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            min-height: 100px;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
 
-        .answer-options {
+        .answer-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 20px 0;
+            gap: 15px;
+            margin: 25px 0;
         }
 
-        .answer-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #000000;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
+        .answer-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 5px solid #a6e3ff;
+            border-radius: 20px;
+            padding: 20px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .answer-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-
-        .answer-btn.correct {
-            background: #4CAF50;
-            border-color: #388E3C;
-        }
-
-        .answer-btn.incorrect {
-            background: #642025;
-            border-color: #642025;
-        }
-
-        .timer {
+        .answer-card::before {
+            content: '';
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 18px;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            transition: left 0.5s;
         }
 
-        .exam-timer {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 18px;
+        .answer-card:hover::before {
+            left: 100%;
         }
 
-        /* Right Column */
+        .answer-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: white;
+            border-color: #ff9acd;
+            box-shadow: 0 10px 25px rgba(255, 154, 205, 0.4);
+        }
+
+        .answer-card.correct {
+            background: linear-gradient(145deg, #4CAF50, #66BB6A);
+            border-color: #2E7D32;
+            color: white;
+            animation: correctAnswer 0.5s ease;
+        }
+
+        .answer-card.incorrect {
+            background: linear-gradient(145deg, #ff5252, #ff6b6b);
+            border-color: #c62828;
+            color: white;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctAnswer {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Stats Section - Right */
         .stats-section {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
-        .stats-box {
-            background: #f9f9f9;
+        .stats-card {
+            background: linear-gradient(145deg, #fff0f5, #ffe6ee);
+            border-radius: 25px;
+            padding: 20px;
+            border: 6px solid;
+            box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
+            transition: all 0.3s;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(255, 182, 193, 0.4);
+        }
+
+        .stats-card.ranking { border-color: #ffde59; }
+        .stats-card.progress { border-color: #6bcbff; }
+        .stats-card.teacher { border-color: #ff9acd; }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
             border-radius: 10px;
-            padding: 15px;
-            border: 3px solid;
+            margin: 10px 0;
+            overflow: hidden;
+            position: relative;
         }
 
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff9acd, #ff6ba9);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: progressShimmer 2s infinite;
+        }
+
+        @keyframes progressShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Ranking List Styles */
         .ranking-item {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 15px;
+            border: 3px solid #ffde59;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .ranking-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .ranking-position {
+            font-weight: 700;
+            color: #ff6ba9;
+            font-size: 1.2rem;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .ranking-name {
+            flex-grow: 1;
+            padding-left: 15px;
+            font-weight: 700;
+            color: #5a3d5c;
+            font-size: 1.1rem;
+        }
+
+        .ranking-score {
+            font-weight: 700;
+            color: #ff6ba9;
+            font-size: 1.1rem;
+            min-width: 50px;
+            text-align: right;
         }
 
         /* Controls */
@@ -203,61 +488,79 @@
             display: flex;
             justify-content: center;
             gap: 20px;
-            padding: 20px;
-            background: #f5f5f5;
-            border-top: 3px solid #ddd;
+            padding: 25px;
+            background: linear-gradient(145deg, #fff9e6, #fff0cc);
+            border-top: 8px dotted #ffde59;
+            position: relative;
+            overflow: hidden;
         }
 
         .control-btn {
-            padding: 12px 30px;
+            padding: 15px 35px;
             border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            min-width: 150px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 180px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.2);
         }
 
-        .btn-start {
-            background: #C87D87;
-            color: white;
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
         }
 
-        .btn-next {
-            background: #6B7556;
-            color: white;
-        }
-
-        .btn-help {
-            background: #E5BCA9;
-            color: white;
-        }
-
-        .btn-restart {
-            background: #2196F3;
-            color: white;
-        }
-
-        .btn-next-day {
-            background: #9C27B0;
-            color: white;
-        }
-
-        .btn-ask {
-            background: #FF9800;
-            color: white;
+        .control-btn:hover::before {
+            left: 100%;
         }
 
         .control-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 0 rgba(0, 0, 0, 0.2);
         }
 
-        .control-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
+        .control-btn:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-start { 
+            background: linear-gradient(145deg, #ff9acd, #ff6ba9);
+            color: white;
+            border: 5px solid #ff4081;
+        }
+
+        .btn-next { 
+            background: linear-gradient(145deg, #6bcbff, #0099ff);
+            color: white;
+            border: 5px solid #0066cc;
+        }
+
+        .btn-help { 
+            background: linear-gradient(145deg, #ffde59, #ffb347);
+            color: white;
+            border: 5px solid #ff8a00;
+        }
+
+        .btn-ask { 
+            background: linear-gradient(145deg, #4CAF50, #66BB6A);
+            color: white;
+            border: 5px solid #2E7D32;
         }
 
         /* Overlays */
@@ -272,345 +575,218 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            backdrop-filter: blur(10px);
         }
 
         .overlay-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 800px;
+            background: linear-gradient(145deg, #fff9e6, #fff0cc);
+            padding: 40px;
+            border-radius: 30px;
+            max-width: 700px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
-            position: relative;
+            border: 8px solid #ff9acd;
+            box-shadow: 0 25px 60px rgba(255, 154, 205, 0.5);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .material-content {
-            font-size: 16px;
-            line-height: 1.6;
-            margin: 20px 0;
-        }
-
-        .formula-box {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border-left: 5px solid #2196F3;
-            font-family: 'Cambria Math', serif;
-        }
-
-        /* Day 4 Exam Styles */
-        .exam-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .exam-option {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            border: 3px solid transparent;
-        }
-
-        .exam-option:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .exam-option.patrol {
-            border-color: #4CAF50;
-        }
-
-        .exam-option.roam {
-            border-color: #FF9800;
-        }
-
-        /* Risk Indicator */
-        .risk-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            z-index: 100;
-            display: none;
-        }
-
-        /* Feedback */
-        .feedback {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px 40px;
-            border-radius: 10px;
-            color: white;
-            font-weight: bold;
-            z-index: 1001;
-            display: none;
-            animation: fadeInOut 3s;
-        }
-
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; }
-            10%, 90% { opacity: 1; }
-        }
-
-        .feedback.correct {
-            background: #4CAF50;
-        }
-
-        .feedback.incorrect {
-            background: #F44336;
-        }
-
-        .feedback.score {
-            background: #2196F3;
-        }
-
-        /* Student Question Indicator */
-        .question-indicator {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(33, 150, 243, 0.9);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            z-index: 100;
-            display: none;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        /* Teacher Score Display */
-        .teacher-score {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            z-index: 100;
-            display: none;
-        }
-
-        /* Question Counter */
-        .question-counter {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        /* Restart Popup Styles */
-        .restart-popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .restart-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            color: white;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            animation: popupScale 0.5s ease-out;
-        }
-
-        @keyframes popupScale {
-            0% { transform: scale(0.8); opacity: 0; }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
 
-        .restart-buttons {
-            display: flex;
-            gap: 20px;
-            margin-top: 30px;
-            justify-content: center;
-        }
-
-        .btn-yes {
-            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 25px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-width: 150px;
-        }
-
-        .btn-no {
-            background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 25px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-width: 150px;
-        }
-
-        .btn-yes:hover, .btn-no:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        .achievement-badge {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border: 2px solid gold;
-            animation: glow 2s infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 10px gold; }
-            50% { box-shadow: 0 0 20px gold; }
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .stat-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-        }
-        
-        /* Difficulty Warning */
-        .difficulty-warning {
+        /* Popup Styles */
+        .popup {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
-            color: white;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: linear-gradient(145deg, #fff9e6, #fff0cc);
             padding: 30px;
-            border-radius: 15px;
-            z-index: 2001;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
+            border-radius: 25px;
+            border: 8px solid #ff9acd;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            z-index: 1001;
             display: none;
+            min-width: 400px;
+            max-width: 500px;
+            animation: popupAppear 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        
-        .warning-icon {
-            font-size: 48px;
+
+        @keyframes popupAppear {
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .popup-content {
+            text-align: center;
+            color: #5a3d5c;
+        }
+
+        .popup-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.8rem;
+            color: #ff6ba9;
             margin-bottom: 20px;
+        }
+
+        .popup-message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .popup-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+
+        .popup-btn-primary {
+            background: linear-gradient(145deg, #ff9acd, #ff6ba9);
+            color: white;
+            border: 4px solid #ff4081;
+        }
+
+        .popup-btn-secondary {
+            background: linear-gradient(145deg, #6bcbff, #0099ff);
+            color: white;
+            border: 4px solid #0066cc;
+        }
+
+        /* Floating Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            z-index: 1001;
+            display: none;
+            animation: slideIn 0.5s ease, fadeOut 0.5s ease 2.5s forwards;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .notification.correct {
+            background: linear-gradient(145deg, #4CAF50, #66BB6A);
+            border: 5px solid #2E7D32;
+        }
+
+        .notification.incorrect {
+            background: linear-gradient(145deg, #ff5252, #ff6b6b);
+            border: 5px solid #c62828;
+        }
+
+        /* Interactive Elements */
+        .clickable {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .clickable:hover {
+            transform: scale(1.1);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .game-title {
+                font-size: 2rem;
+            }
+            
+            .day-info {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .answer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .popup {
+                min-width: 300px;
+                max-width: 90%;
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Difficulty Warning -->
-    <div class="difficulty-warning" id="difficultyWarning">
-        <div class="warning-icon">⚠️</div>
-        <h2>PERINGATAN TINGKAT KESULITAN!</h2>
-        <p style="margin: 15px 0; font-size: 18px;">
-            <strong>GAME INI SULIT!</strong>
-        </p>
-        <p style="margin: 10px 0;">
-            • Anda harus menjawab <strong>minimal 12 dari 20 soal</strong> dengan benar
-        </p>
-        <p style="margin: 10px 0;">
-            • Jika hanya 4-8 jawaban benar: <strong>DIPECAT!</strong>
-        </p>
-        <p style="margin: 10px 0;">
-            • Pertanyaan siswa akan muncul <strong>SANGAT CEPAT</strong>
-        </p>
-        <p style="margin: 20px 0; color: #FF6B6B;">
-            Siap untuk tantangan?
-        </p>
-        <button class="control-btn" onclick="closeWarning()" style="background: #FF9800; color: white;">
-            YA, SAYA SIAP!
-        </button>
+    <!-- Animated Background Bubbles -->
+    <div id="bubbles"></div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Start Day Popup -->
+    <div class="popup" id="startDayPopup">
+        <div class="popup-content">
+            <h2 class="popup-title" id="startDayTitle">Mulai Hari 1</h2>
+            <div class="popup-message" id="startDayMessage">
+                Siap untuk memulai pelajaran hari ini? Mari kita ajarkan matematika dengan menyenangkan! ✨
+            </div>
+            <div class="popup-buttons">
+                <button class="popup-btn popup-btn-primary" onclick="startDayConfirmed()">Mulai Hari</button>
+                <button class="popup-btn popup-btn-secondary" onclick="closePopup('startDayPopup')">Nanti</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Risk Indicator -->
-    <div class="risk-indicator" id="riskIndicator">
-        🎲 Risiko: <span id="riskValue">30%</span>
-    </div>
-
-    <!-- Teacher Score -->
-    <div class="teacher-score" id="teacherScore">
-        📊 Skor Guru: <span id="scoreValue">0</span><br>
-        ✅ Benar: <span id="totalCorrectValue">0</span>/20
-    </div>
-
-    <!-- Student Question Indicator -->
-    <div class="question-indicator" id="questionIndicator">
-        ❓ <span id="questionStudent">Siswa</span> ingin bertanya! Klik pada siswa yang berkedip
-    </div>
-
-    <!-- Restart Popup -->
-    <div class="restart-popup" id="restartPopup">
-        <div class="restart-content">
-            <h2 id="restartTitle">🎮 Permainan Selesai!</h2>
-            
-            <div id="finalStats" style="margin: 20px 0;">
-                <!-- Final stats will be added here -->
+    <!-- Student Question Popup -->
+    <div class="popup" id="studentQuestionPopup">
+        <div class="popup-content">
+            <h2 class="popup-title">Pertanyaan Siswa</h2>
+            <div class="popup-message" id="studentQuestionMessage">
+                <!-- Student question message will be added here -->
             </div>
-
-            <div class="stats-grid" id="statsGrid">
-                <!-- Stats grid will be added here -->
+            <div class="popup-buttons">
+                <button class="popup-btn popup-btn-primary" onclick="answerStudentQuestionPopup()">Jawab Pertanyaan</button>
+                <button class="popup-btn popup-btn-secondary" onclick="closeStudentQuestionPopup()">Lewati</button>
             </div>
-
-            <div id="achievementBadge" class="achievement-badge" style="display: none;">
-                <!-- Achievement badge will be added here -->
-            </div>
-
-            <h3>Main Lagi?</h3>
-            <div class="restart-buttons">
-                <button class="btn-yes" onclick="confirmRestart()">
-                    ✅ Ya, Main Lagi!
-                </button>
-                <button class="btn-no" onclick="declineRestart()">
-                    ❌ Tidak, Terima Kasih
-                </button>
-            </div>
-            
-            <p style="margin-top: 20px; font-size: 14px; opacity: 0.8;">
-                Skor tertinggi: <span id="highScoreValue">0</span>
-            </p>
         </div>
     </div>
 
@@ -618,75 +794,135 @@
     <div class="game-container">
         <!-- Header -->
         <div class="game-header">
-            <h1>🎓 Math Teacher RPG - HARD MODE</h1>
-            <div class="header-right">
-                <div class="day-counter" id="dayCounter">Hari 1/4</div>
-                <div class="topic-display" id="topicDisplay">Permutasi & Kombinasi</div>
+            <div class="header-content">
+                <h1 class="game-title">
+                    <span class="title-decoration">✨</span>
+                    Math Teacher Adventure
+                    <span class="title-decoration">🎓</span>
+                </h1>
+                
+                <div class="day-info">
+                    <div class="day-badge" id="dayCounter">
+                        📅 Hari <span id="dayNumber">1</span>/4
+                    </div>
+                    <div class="topic-badge" id="topicDisplay">
+                        📚 Permutasi & Kombinasi
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main Game Grid -->
         <div class="main-grid">
-            <!-- Left: Students -->
+            <!-- Left: Classroom -->
             <div class="classroom-section">
-                <h2>👨‍🎓 Siswa</h2>
-                <div id="studentList">
-                    <!-- Students will be added here -->
+                <h2 class="section-title"><i class="fas fa-user-graduate"></i> Siswa Kelas</h2>
+                <div class="student-container" id="studentList">
+                    <!-- Students will be dynamically added -->
                 </div>
             </div>
 
             <!-- Center: Whiteboard -->
-            <div class="whiteboard-container">
-                <div class="question-counter" id="questionCounter">Pertanyaan 1/10</div>
-                <div class="timer" id="timer">⏰ 25s</div>
-                <div class="exam-timer" id="examTimer" style="display: none;">⏳ Ujian: 2:00</div>
-                <div class="question-text" id="questionText">
-                    Selamat datang! Klik "Mulai Hari" untuk memulai pelajaran.
+            <div class="whiteboard-section">
+                <!-- Timer and Progress -->
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <div class="day-badge" style="font-size: 1rem;" id="questionCounter">
+                        ❓ Pertanyaan 1/10
+                    </div>
+                    <div class="day-badge" style="font-size: 1rem; background: linear-gradient(145deg, #ff5252, #ff6b6b);" id="timer">
+                        ⏰ 25s
+                    </div>
                 </div>
-                <div class="answer-options" id="answerOptions">
-                    <!-- Answer options will be added here -->
+
+                <!-- Question Display -->
+                <div class="question-display">
+                    <p class="question-text" id="questionText">
+                        Selamat datang di petualangan mengajar! Klik tombol "Mulai Hari" di popup untuk memulai pelajaran hari ini. ✨
+                    </p>
+                </div>
+
+                <!-- Answer Options -->
+                <div class="answer-grid" id="answerOptions">
+                    <!-- Answers will be dynamically added -->
+                </div>
+
+                <!-- Progress Bars -->
+                <div style="margin-top: 25px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: white; font-weight: 600;">😊 Kesabaran Guru</span>
+                        <span style="color: white; font-weight: 600;" id="patienceValue">100%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="patienceBar" style="width: 100%"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Right: Stats -->
             <div class="stats-section">
-                <div class="stats-box">
-                    <h3>🏆 Ranking</h3>
+                <!-- Ranking Card -->
+                <div class="stats-card ranking">
+                    <h2 class="section-title"><i class="fas fa-trophy"></i> Ranking Siswa</h2>
                     <div id="rankingList">
-                        <!-- Ranking will be added here -->
+                        <!-- Ranking will be dynamically added -->
                     </div>
                 </div>
-                <div class="stats-box">
-                    <h3>📊 Progress</h3>
-                    <div>Total Benar: <span id="totalCorrectDisplay">0</span>/20</div>
-                    <div>Rata-rata: <span id="averageScore">0%</span></div>
-                    <div>Pertanyaan hari ini: <span id="questionsAnswered">0/10</span></div>
+
+                <!-- Progress Card -->
+                <div class="stats-card progress">
+                    <h2 class="section-title"><i class="fas fa-chart-line"></i> Progress Belajar</h2>
+                    <div style="margin: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>🎯 Total Benar</span>
+                            <span id="totalCorrectDisplay">0/20</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="correctnessBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
+                        <div style="text-align: center; padding: 10px; background: #ffde59; border-radius: 15px;">
+                            <div style="font-size: 1.5rem; font-weight: 700;" id="averageScore">0%</div>
+                            <div style="font-size: 0.9rem;">Rata-rata</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: #a6e3ff; border-radius: 15px;">
+                            <div style="font-size: 1.5rem; font-weight: 700;" id="teacherScore">0</div>
+                            <div style="font-size: 0.9rem;">Skor Guru</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stats-box">
-                    <h3>😊 Guru</h3>
-                    <div>Kesabaran: <span id="patienceValue">100%</span></div>
-                    <div>Semangat: <span id="moraleValue">100</span></div>
-                    <div>Status: <span id="teacherStatus">Baik</span></div>
+
+                <!-- Teacher Stats Card -->
+                <div class="stats-card teacher">
+                    <h2 class="section-title"><i class="fas fa-chalkboard-teacher"></i> Status Guru</h2>
+                    <div style="margin-top: 15px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <div style="width: 40px; height: 40px; background: #ffde59; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                ⭐
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">Semangat</div>
+                                <div style="font-size: 1.2rem; font-weight: 700;" id="moraleValue">100</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 40px; height: 40px; background: #ff9acd; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                💪
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">Status</div>
+                                <div style="font-size: 1.2rem; font-weight: 700;" id="teacherStatus">Baik</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Controls -->
+        <!-- Controls - Only Bantuan Button -->
         <div class="game-controls">
-            <button class="control-btn btn-start" id="startDayBtn" onclick="startDay()">
-                Mulai Hari
-            </button>
-            <button class="control-btn btn-next" id="nextQuestionBtn" onclick="nextQuestion()" disabled style="display: none;">
-                Lanjut Pertanyaan
-            </button>
-            <button class="control-btn btn-ask" id="askBtn" onclick="answerStudentQuestion()" disabled>
-                Jawab Pertanyaan Siswa
-            </button>
-            <button class="control-btn btn-restart" id="restartBtn" onclick="restartGame()" style="display: none;">
-                Mulai Ulang Hari
-            </button>
             <button class="control-btn btn-help" onclick="showHelp()">
-                Bantuan
+                <i class="fas fa-question-circle"></i> Bantuan
             </button>
         </div>
     </div>
@@ -694,28 +930,32 @@
     <!-- Material Overlay -->
     <div class="overlay" id="materialOverlay">
         <div class="overlay-content">
-            <h2 id="materialTitle">Materi Hari 1</h2>
-            <div class="material-content" id="materialContent">
-                <!-- Material will be added here -->
+            <h2 style="text-align: center; color: #ff6ba9; margin-bottom: 20px;" id="materialTitle">
+                📚 Materi Hari 1
+            </h2>
+            <div id="materialContent" style="color: #5a3d5c; line-height: 1.6; font-size: 1.1rem;">
+                <!-- Material content will be added here -->
             </div>
-            <button class="control-btn btn-start" onclick="continueToQuestions()" style="width: 100%; margin-top: 20px;">
-                Lanjut ke Pertanyaan
+            <button class="control-btn btn-start" onclick="continueToQuestions()" style="width: 100%; margin-top: 30px;">
+                <i class="fas fa-arrow-right"></i> Mulai Belajar!
             </button>
         </div>
     </div>
 
-    <!-- Student Question Overlay -->
-    <div class="overlay" id="studentQuestionOverlay">
+    <!-- Student Question Detail Overlay -->
+    <div class="overlay" id="studentQuestionDetailOverlay">
         <div class="overlay-content">
-            <h2>❓ Pertanyaan Siswa</h2>
-            <div id="studentQuestionContent" style="margin: 20px 0; padding: 20px; background: #e3f2fd; border-radius: 10px;">
+            <h2 style="text-align: center; color: #6bcbff; margin-bottom: 20px;">
+                <i class="fas fa-question-circle"></i> Pertanyaan Siswa
+            </h2>
+            <div id="studentQuestionContent" style="background: #e3f2ff; padding: 25px; border-radius: 20px; margin-bottom: 25px;">
                 <!-- Student question will be added here -->
             </div>
-            <div id="studentQuestionOptions" style="margin: 20px 0;">
-                <!-- Answer options for student question -->
+            <div id="studentQuestionOptions" style="display: grid; gap: 15px; margin-bottom: 25px;">
+                <!-- Options will be added here -->
             </div>
-            <button class="control-btn btn-next" onclick="closeStudentQuestion()" style="width: 100%;">
-                Kembali ke Pelajaran
+            <button class="control-btn btn-next" onclick="closeStudentQuestionDetail()" style="width: 100%;">
+                <i class="fas fa-arrow-left"></i> Kembali ke Pelajaran
             </button>
         </div>
     </div>
@@ -723,18 +963,28 @@
     <!-- Day Complete Overlay -->
     <div class="overlay" id="dayCompleteOverlay">
         <div class="overlay-content">
-            <h2>🎉 Hari Selesai!</h2>
-            <div style="margin: 20px 0; padding: 20px; background: #e8f5e9; border-radius: 10px;">
-                <h3>📊 Hasil Hari Ini:</h3>
-                <p>Pertanyaan dijawab: <span id="dayQuestionsAnswered">0</span>/<span id="dayTotalQuestions">10</span></p>
-                <p>Jawaban benar: <span id="dayCorrectAnswers">0</span></p>
-                <p>Total Benar: <span id="totalCorrectSoFar">0</span>/<span id="totalQuestionsSoFar">10</span></p>
-                <p>Pertanyaan siswa terjawab: <span id="dayStudentQuestions">0</span></p>
-                <p>Skor hari ini: <span id="dayScore">0</span></p>
-                <p>Total Skor Guru: <span id="totalTeacherScore">0</span></p>
+            <h2 style="text-align: center; color: #4CAF50; margin-bottom: 25px;">
+                🎉 Hari Selesai!
+            </h2>
+            <div style="background: linear-gradient(145deg, #e8f5e9, #c8e6c9); padding: 25px; border-radius: 20px; margin-bottom: 25px;">
+                <h3 style="color: #2E7D32; margin-bottom: 15px;">📊 Hasil Hari Ini:</h3>
+                <div style="display: grid; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>✅ Jawaban Benar:</span>
+                        <span id="dayCorrectAnswers" style="font-weight: 700;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>📊 Total Benar:</span>
+                        <span id="totalCorrectSoFar" style="font-weight: 700;">0/20</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>🎯 Skor Hari:</span>
+                        <span id="dayScore" style="font-weight: 700;">0</span>
+                    </div>
+                </div>
             </div>
             <button class="control-btn btn-next-day" onclick="autoNextDay()" style="width: 100%;">
-                Lanjut ke Hari Berikutnya
+                <i class="fas fa-arrow-right"></i> Lanjut ke Hari Berikutnya
             </button>
         </div>
     </div>
@@ -742,411 +992,178 @@
     <!-- Exam Overlay -->
     <div class="overlay" id="examOverlay">
         <div class="overlay-content">
-            <h2>🎓 UJIAN NASIONAL - Hari 4</h2>
-            <p style="margin: 15px 0;">Hari ini menentukan nasib karir Anda sebagai guru!</p>
-            
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">
-                <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; text-align: center;">
-                    <div style="font-size: 24px; font-weight: bold;" id="examAvgScore">0.0</div>
-                    <div>Rata-rata Nilai</div>
+            <h2 style="text-align: center; color: #ff6ba9; margin-bottom: 25px;">
+                🎓 UJIAN NASIONAL - Hari 4
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
+                <div style="background: linear-gradient(145deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 20px; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 900; color: #2E7D32;" id="examAvgScore">0.0</div>
+                    <div style="color: #2E7D32;">Rata-rata</div>
                 </div>
-                <div style="background: #fff3e0; padding: 15px; border-radius: 10px; text-align: center;">
-                    <div style="font-size: 24px; font-weight: bold;" id="examPassRate">0%</div>
-                    <div>Tingkat Kelulusan</div>
+                <div style="background: linear-gradient(145deg, #fff3e0, #ffe0b2); padding: 20px; border-radius: 20px; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 900; color: #EF6C00;" id="examPassRate">0%</div>
+                    <div style="color: #EF6C00;">Kelulusan</div>
                 </div>
-                <div style="background: #ffebee; padding: 15px; border-radius: 10px; text-align: center;">
-                    <div style="font-size: 24px; font-weight: bold;" id="examRisk">0%</div>
-                    <div>Risiko Dipecat</div>
-                </div>
-            </div>
-            
-            <div class="exam-options">
-                <div class="exam-option patrol" onclick="startPatrol()">
-                    <h3>🚨 Patroli Sekolah</h3>
-                    <p>Tangkap siswa bolos dan kirim ke BK untuk +10 skor!</p>
-                    <p style="color: #666; margin-top: 10px;">⏱️ 30 menit</p>
-                </div>
-                <div class="exam-option roam" onclick="startRoaming()">
-                    <h3>🏃‍♀️ Jalan-jalan</h3>
-                    <p>Beli es krim dan jalan-jalan di sekolah.</p>
-                    <p style="color: #666; margin-top: 10px;">⏱️ 30 menit</p>
-                </div>
-            </div>
-            
-            <div style="margin-top: 30px; padding: 15px; background: #e3f2fd; border-radius: 10px;">
-                <h4>📋 Waktu Ujian: 2 jam</h4>
-                <p>Setiap aksi (patroli/jalan-jalan) menghabiskan 30 menit.</p>
-                <p>Waktu tersisa: <span id="examTimeLeft">2:00</span></p>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <button class="control-btn btn-start" onclick="finishExam()">
-                    Selesaikan Ujian
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Patrol Overlay -->
-    <div class="overlay" id="patrolOverlay">
-        <div class="overlay-content">
-            <h2>🚨 Patroli Sekolah</h2>
-            <div id="patrolContent" style="margin: 20px 0;">
-                <!-- Patrol content will be added here -->
-            </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <p>Waktu tersisa: <span id="patrolTimeLeft">2:00</span></p>
-                <button class="control-btn" onclick="endPatrol()">
-                    Kembali ke Ujian
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Roam Overlay -->
-    <div class="overlay" id="roamOverlay">
-        <div class="overlay-content">
-            <h2>🏃‍♀️ Jalan-jalan</h2>
-            <div style="text-align: center; margin: 20px 0;">
-                <h3>🍦 Toko Es Krim</h3>
-                <div style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;">
-                    <button class="control-btn" style="background: #FFD700;" onclick="buyIceCream('vanilla')">
-                        🍨 Vanila<br>+10 Semangat
-                    </button>
-                    <button class="control-btn" style="background: #8B4513; color: white;" onclick="buyIceCream('chocolate')">
-                        🍫 Coklat<br>+15 Semangat
-                    </button>
-                    <button class="control-btn" style="background: #FF69B4;" onclick="buyIceCream('strawberry')">
-                        🍓 Stroberi<br>+20 Semangat
-                    </button>
+                <div style="background: linear-gradient(145deg, #ffebee, #ffcdd2); padding: 20px; border-radius: 20px; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 900; color: #C62828;" id="examRisk">0%</div>
+                    <div style="color: #C62828;">Risiko</div>
                 </div>
             </div>
             <div style="text-align: center;">
-                <p>💪 Semangat: <span id="moraleDisplay">100</span></p>
-                <p>Waktu tersisa: <span id="roamTimeLeft">2:00</span></p>
-                <button class="control-btn" onclick="endRoaming()" style="margin-top: 20px;">
-                    Kembali ke Ujian
+                <button class="control-btn btn-start" onclick="finishExam()" style="min-width: 200px;">
+                    <i class="fas fa-flag-checkered"></i> Selesaikan Ujian
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Result Overlay -->
+    <!-- Final Result Overlay -->
     <div class="overlay" id="resultOverlay">
-        <div class="overlay-content" id="resultContainer">
-            <h2 id="resultTitle">Hasil Ujian</h2>
-            <div id="resultMessage" style="margin: 20px 0;">
-                <!-- Result message will be added here -->
+        <div class="overlay-content">
+            <h2 style="text-align: center; color: #ff6ba9; margin-bottom: 25px;" id="resultTitle">
+                🎮 Permainan Selesai!
+            </h2>
+            <div id="resultContent" style="text-align: center; color: #5a3d5c; font-size: 1.1rem; line-height: 1.6;">
+                <!-- Result content will be added here -->
             </div>
-            <div style="text-align: center;">
-                <button class="control-btn" onclick="showRestartPopup()">
-                    Main Lagi
+            <div style="display: flex; gap: 20px; margin-top: 30px;">
+                <button class="control-btn btn-start" onclick="restartGame()" style="flex: 1;">
+                    <i class="fas fa-redo"></i> Main Lagi
+                </button>
+                <button class="control-btn btn-help" onclick="showHighScores()" style="flex: 1;">
+                    <i class="fas fa-trophy"></i> Skor Tertinggi
                 </button>
             </div>
         </div>
     </div>
-
-    <!-- Feedback -->
-    <div class="feedback" id="feedback"></div>
 
     <script>
         // ========================
-        // GAME STATE
+        // GAME STATE & VARIABLES
         // ========================
         const gameState = {
             currentDay: 1,
             currentQuestion: 0,
             gameActive: false,
             timerActive: false,
-            timeLeft: 25, // Reduced from 30
+            timeLeft: 25,
             timerInterval: null,
             autoNextTimer: null,
             questionsAnswered: 0,
             correctAnswers: 0,
-            totalCorrectAllDays: 0, // Track correct answers across all days
-            totalQuestionsAllDays: 0, // Track total questions
+            totalCorrectAllDays: 0,
+            totalQuestionsAllDays: 0,
             patience: 100,
-            knowledgePoints: 0,
             teacherScore: 0,
             studentQuestionActive: false,
             askingStudent: null,
             studentQuestionsAnswered: 0,
-            
-            // Day 4 exam state
             examActive: false,
-            caughtStudents: [],
-            cheatedStudents: [],
             morale: 100,
             riskLevel: 30,
-            iceCreamBought: false,
-            examResults: [],
-            examTimeLeft: 120,
-            examTimerInterval: null,
-            remainingActions: 4,
-            
-            // Game result state
-            finalResult: null,
-            finalPassRate: 0,
-            finalStats: null,
-            
-            // Student question tracking
-            studentQuestionTimers: [],
-            questionDelay: 0,
-            
-            // Difficulty settings
-            difficulty: "HARD",
-            requiredCorrect: 12, // Need at least 12/20 correct
-            warningThreshold: 8, // If less than 8, automatic fail
-            perfectBonus: 18 // If 18+, big bonus
+            requiredCorrect: 12,
+            warningThreshold: 8,
+            perfectBonus: 18,
+            studentQuestionChance: 0.4, // Meningkatkan peluang siswa bertanya dari 0.3 ke 0.4
+            studentQuestionCount: 0
         };
 
-        // High score system
-        let highScore = localStorage.getItem('mathTeacherHighScore') || 0;
+        // Students data
+        const students = [
+            { name: "Wemmbu", emoji: "🐻", color: "#FFB347" },
+            { name: "Spoke", emoji: "🚴", color: "#6BCBFF" },
+            { name: "Parrotx2", emoji: "🦜", color: "#4CAF50" },
+            { name: "Gojo", emoji: "👓", color: "#9C27B0" },
+            { name: "Geto", emoji: "🎭", color: "#795548" },
+            { name: "Flame", emoji: "🔥", color: "#FF5252" }
+        ];
 
-        // ========================
-        // GAME DATA
-        // ========================
-        const students = ["Wemmbu", "Spoke", "Parrotx2", "Gojo", "Geto", "Flame"];
         const studentScores = {};
-        
-        // Additional NPC students for truants
-        const npcStudents = ["Rafi", "Dina", "Sari", "Budi", "Andi", "Lina", "Rina", "Doni"];
-        
-        // Initialize student scores
         students.forEach(student => {
-            studentScores[student] = 4.0 + Math.random() * 1.5;
+            studentScores[student.name] = 4.0 + Math.random() * 1.5;
         });
 
-        // Student questions data (hari 2 dan 3 saja)
-        const studentQuestions = {
-            day2: [
-                {
-                    student: "Flame",
-                    question: "Pak, kenapa peluang selalu antara 0 dan 1?",
-                    options: [
-                        "Karena itu definisi probabilitas",
-                        "Agar mudah dihitung",
-                        "Kebiasaan matematikawan",
-                        "Tidak selalu, bisa lebih dari 1"
-                    ],
-                    correct: 0,
-                    explanation: "Peluang 0 = mustahil, 1 = pasti. Ini definisi dasar probabilitas."
-                },
-                {
-                    student: "Wemmbu",
-                    question: "Pak, kalau lempar 3 koin, peluang dapat 2 gambar 1 angka?",
-                    options: ["1/8", "3/8", "1/2", "5/8"],
-                    correct: 1,
-                    explanation: "Ruang sampel 8, kemungkinan: GGA, GAG, AGG → 3/8"
-                },
-                {
-                    student: "Spoke",
-                    question: "Pak, apa bedanya peluang empiris dan teoretis?",
-                    options: [
-                        "Empiris dari percobaan, teoretis dari teori",
-                        "Teoretis lebih akurat",
-                        "Sama saja",
-                        "Empiris untuk dadu, teoretis untuk koin"
-                    ],
-                    correct: 0,
-                    explanation: "Empiris berdasarkan percobaan nyata, teoretis berdasarkan perhitungan matematis."
-                },
-                {
-                    student: "Parrotx2",
-                    question: "Pak, kalau peluang hujan 70%, apakah pasti hujan?",
-                    options: ["Pasti", "Tidak pasti", "70% pasti", "Tidak tahu"],
-                    correct: 1,
-                    explanation: "Peluang 70% berarti kemungkinan besar hujan, tapi tidak pasti."
-                },
-                {
-                    student: "Gojo",
-                    question: "Pak, dari 52 kartu, peluang dapat AS atau hati?",
-                    options: ["4/52", "13/52", "16/52", "17/52"],
-                    correct: 3,
-                    explanation: "P(AS) = 4/52, P(hati) = 13/52, P(AS∩hati)=1/52, jadi 4/52 + 13/52 - 1/52 = 16/52"
-                }
-            ],
-            day3: [
-                {
-                    student: "Geto",
-                    question: "Pak, kenapa limit penting dalam kalkulus?",
-                    options: [
-                        "Dasar turunan dan integral",
-                        "Untuk hitung kecepatan",
-                        "Hanya teori",
-                        "Tidak penting"
-                    ],
-                    correct: 0,
-                    explanation: "Limit adalah konsep dasar untuk turunan (perubahan) dan integral (luas)."
-                },
-                {
-                    student: "Flame",
-                    question: "Pak, kalau x mendekati 0, berapa sin(x)/x?",
-                    options: ["0", "1", "Tak hingga", "Tidak ada"],
-                    correct: 1,
-                    explanation: "Ini limit trigonometri dasar, hasilnya 1."
-                },
-                {
-                    student: "Wemmbu",
-                    question: "Pak, apa artinya limit tak hingga?",
-                    options: [
-                        "Nilai semakin besar tanpa batas",
-                        "Tidak terdefinisi",
-                        "Sama dengan tak hingga",
-                        "Limit tidak ada"
-                    ],
-                    correct: 0,
-                    explanation: "Limit tak hingga berarti fungsi semakin besar ketika x mendekati nilai tertentu."
-                },
-                {
-                    student: "Spoke",
-                    question: "Pak, bagaimana cara hitung limit fungsi pecahan?",
-                    options: [
-                        "Substitusi langsung dulu",
-                        "Faktorkan",
-                        "Kalikan sekawan",
-                        "Semua benar"
-                    ],
-                    correct: 3,
-                    explanation: "Bisa substitusi dulu, jika 0/0 coba faktorkan atau kalikan sekawan."
-                },
-                {
-                    student: "Parrotx2",
-                    question: "Pak, limit kanan dan limit kiri itu apa?",
-                    options: [
-                        "Dekat dari kanan dan kiri",
-                        "Sama saja",
-                        "Untuk fungsi diskrit",
-                        "Tidak penting"
-                    ],
-                    correct: 0,
-                    explanation: "Limit kanan (x→c⁺) dan limit kiri (x→c⁻). Jika sama, limit ada."
-                }
-            ]
-        };
+        // High scores
+        let highScore = localStorage.getItem('mathTeacherHighScore') || 0;
+        let bestCorrect = localStorage.getItem('mathTeacherBestCorrect') || 0;
 
-        const materialData = {
-            day1: {
-                title: "Hari 1: Permutasi & Kombinasi",
-                content: `
-                    <h3>✨ Pengertian Dasar</h3>
-                    <p><strong>Permutasi</strong> adalah cara menyusun objek dengan memperhatikan urutan.</p>
-                    <p><strong>Kombinasi</strong> adalah cara memilih objek tanpa memperhatikan urutan.</p>
-                    
-                    <div class="formula-box">
-                        <p><strong>Permutasi:</strong> P(n,r) = n! / (n-r)!</p>
-                        <p><strong>Kombinasi:</strong> C(n,r) = n! / [r!(n-r)!]</p>
-                        <p>Dimana n = total objek, r = objek yang dipilih</p>
-                    </div>
-                    
-                    <h3>🎯 Contoh</h3>
-                    <p>Permutasi: Susun 5 buku berbeda = 5! = 120 cara</p>
-                    <p>Kombinasi: Pilih 3 dari 7 siswa = C(7,3) = 35 cara</p>
-                `
-            },
-            day2: {
-                title: "Hari 2: Peluang (Probability)",
-                content: `
-                    <h3>✨ Apa itu Peluang?</h3>
-                    <p>Peluang mengukur kemungkinan suatu kejadian terjadi.</p>
-                    <p>Nilai antara 0 (mustahil) hingga 1 (pasti).</p>
-                    
-                    <div class="formula-box">
-                        <p><strong>Rumus:</strong> P(A) = n(A) / n(S)</p>
-                        <p>P(A) = Peluang kejadian A</p>
-                        <p>n(A) = Hasil yang diinginkan</p>
-                        <p>n(S) = Total kemungkinan hasil</p>
-                    </div>
-                    
-                    <h3>🎯 Contoh</h3>
-                    <p>Peluang angka genap pada dadu: 3/6 = 1/2 = 50%</p>
-                    <p>Peluang satu gambar satu angka pada 2 koin: 2/4 = 1/2 = 50%</p>
-                `
-            },
-            day3: {
-                title: "Hari 3: Limit Fungsi",
-                content: `
-                    <h3>✨ Apa itu Limit?</h3>
-                    <p>Limit menunjukkan nilai yang didekati oleh fungsi saat variabel mendekati nilai tertentu.</p>
-                    
-                    <div class="formula-box">
-                        <p><strong>Notasi:</strong> lim f(x) = L</p>
-                        <p>x→c</p>
-                        <p>Artinya: saat x mendekati c, f(x) mendekati L</p>
-                    </div>
-                    
-                    <h3>🎯 Contoh</h3>
-                    <p>lim (x² - 4)/(x - 2) = 4</p>
-                    <p>x→2</p>
-                    <p>lim sin(x)/x = 1</p>
-                    <p>x→0</p>
-                `
-            }
-        };
-
+        // ========================
+        // GAME DATA - DIPERBARUI DENGAN 10 SOAL HARI 1
+        // ========================
         const questionsData = {
             day1: [
-                // 5 SOAL PERMUTASI
+                // SOAL PERMUTASI (5 soal)
                 {
-                    question: "Berapa banyak cara menyusun 6 buku berbeda di rak?",
-                    options: ["36", "120", "720", "5040"],
-                    correct: 2,
-                    explanation: "Permutasi 6 objek: 6! = 6×5×4×3×2×1 = 720 cara"
+                    question: "Berapa banyak cara menyusun 5 buku berbeda di rak?",
+                    options: ["24", "120", "720", "5040"],
+                    correct: 1,
+                    explanation: "Permutasi 5 objek: 5! = 5×4×3×2×1 = 120 cara",
+                    type: "permutasi"
                 },
                 {
                     question: "Dalam lomba lari 8 peserta, berapa banyak kemungkinan juara 1, 2, dan 3?",
                     options: ["56", "336", "672", "40320"],
                     correct: 1,
-                    explanation: "Permutasi P(8,3) = 8×7×6 = 336 cara"
+                    explanation: "P(8,3) = 8×7×6 = 336 cara",
+                    type: "permutasi"
                 },
                 {
                     question: "Password 4 digit dengan angka berbeda (0-9), berapa kemungkinan?",
                     options: ["10000", "5040", "3024", "720"],
-                    correct: 2,
-                    explanation: "Permutasi 4 angka: 10×9×8×7 = 5040"
-                },
-                {
-                    question: "Dari kata 'MATEMATIKA', berapa susunan huruf berbeda?",
-                    options: ["151.200", "100.800", "75.600", "50.400"],
-                    correct: 0,
-                    explanation: "10! / (2!2!2!3!) = 151.200 (M:2, A:3, T:2, E:1, I:1, K:1)"
-                },
-                {
-                    question: "Ada 5 warna bendera, berapa cara membuat sinyal dengan 3 bendera berurutan?",
-                    options: ["15", "60", "125", "243"],
                     correct: 1,
-                    explanation: "Permutasi P(5,3) = 5×4×3 = 60 cara",
+                    explanation: "10×9×8×7 = 5040 kemungkinan",
+                    type: "permutasi"
                 },
-                // 5 SOAL KOMBINASI
+                {
+                    question: "Berapa banyak cara menyusun huruf-huruf dalam kata 'MATEMATIKA'?",
+                    options: ["151200", "30240", "90720", "453600"],
+                    correct: 0,
+                    explanation: "10!/(2!2!2!) = 151200 cara (ada 3 huruf yang berulang: M, A, T)",
+                    type: "permutasi"
+                },
+                {
+                    question: "Ada 7 warna berbeda untuk pelangi, berapa cara menyusun 3 warna pertama?",
+                    options: ["210", "35", "840", "5040"],
+                    correct: 0,
+                    explanation: "P(7,3) = 7×6×5 = 210 cara",
+                    type: "permutasi"
+                },
+                
+                // SOAL KOMBINASI (5 soal)
                 {
                     question: "Dari 10 siswa, berapa cara memilih 3 siswa untuk jadi panitia?",
                     options: ["30", "120", "720", "604800"],
                     correct: 1,
-                    explanation: "Kombinasi C(10,3) = 120 cara"
-                },
-                {
-                    question: "Dalam sebuah tim basket, ada 12 pemain. Berapa cara memilih 5 starter?",
-                    options: ["60", "792", "95040", "248832"],
-                    correct: 1,
-                    explanation: "Kombinasi C(12,5) = 792 cara"
+                    explanation: "Kombinasi C(10,3) = 120 cara",
+                    type: "kombinasi"
                 },
                 {
                     question: "Dari 8 titik pada lingkaran, berapa banyak segitiga yang dapat dibentuk?",
                     options: ["56", "336", "672", "40320"],
                     correct: 0,
-                    explanation: "Kombinasi C(8,3) = 56 segitiga"
+                    explanation: "C(8,3) = 56 segitiga",
+                    type: "kombinasi"
                 },
                 {
-                    question: "Ada 6 pria dan 4 wanita. Berapa cara memilih panitia 3 orang dengan minimal 1 wanita?",
-                    options: ["60", "100", "116", "120"],
-                    correct: 2,
-                    explanation: "Total C(10,3)=120, tanpa wanita C(6,3)=20, jadi 120-20=100"
+                    question: "Dalam satu kelas ada 15 siswa. Berapa cara memilih 2 siswa untuk jadi ketua dan wakil?",
+                    options: ["105", "210", "420", "30"],
+                    correct: 1,
+                    explanation: "C(15,2) × 2! = 105 × 2 = 210 cara (karena urutan penting)",
+                    type: "kombinasi"
                 },
                 {
-                    question: "Dalam kotak ada 7 bola berbeda. Berapa cara mengambil 4 bola sekaligus?",
-                    options: ["35", "840", "5040", "1680"],
+                    question: "Dari 12 pemain basket, berapa cara memilih 5 pemain starter?",
+                    options: ["792", "95040", "665280", "479001600"],
                     correct: 0,
-                    explanation: "Kombinasi C(7,4) = 35 cara"
+                    explanation: "C(12,5) = 792 cara",
+                    type: "kombinasi"
+                },
+                {
+                    question: "Ada 6 jenis buah di toko. Berapa cara memilih 3 jenis buah berbeda?",
+                    options: ["20", "120", "720", "216"],
+                    correct: 0,
+                    explanation: "C(6,3) = 20 cara",
+                    type: "kombinasi"
                 }
             ],
             day2: [
@@ -1167,18 +1184,6 @@
                     options: ["1/13", "1/4", "1/52", "4/52"],
                     correct: 0,
                     explanation: "Ada 4 AS dari 52 kartu = 4/52 = 1/13"
-                },
-                {
-                    question: "Peluang hujan hari ini 30%, peluang tidak hujan?",
-                    options: ["30%", "50%", "70%", "100%"],
-                    correct: 2,
-                    explanation: "100% - 30% = 70%"
-                },
-                {
-                    question: "Dua dadu, peluang jumlah 7?",
-                    options: ["1/6", "1/12", "1/18", "1/36"],
-                    correct: 0,
-                    explanation: "Kemungkinan: (1,6),(2,5),(3,4),(4,3),(5,2),(6,1) → 6/36 = 1/6"
                 }
             ],
             day3: [
@@ -1198,37 +1203,166 @@
                     question: "lim (3x² + 2x - 1) saat x→1?",
                     options: ["2", "3", "4", "5"],
                     correct: 2,
-                    explanation: "3(1)² + 2(1) - 1 = 3 + 2 - 1 = 4"
-                },
-                {
-                    question: "lim (x→∞) dari 1/x?",
-                    options: ["0", "1", "∞", "Tidak ada"],
-                    correct: 0,
-                    explanation: "Saat x besar, 1/x mendekati 0"
-                },
-                {
-                    question: "lim (x→0) dari (1 - cos x)/x?",
-                    options: ["0", "1", "1/2", "Tidak ada"],
-                    correct: 0,
-                    explanation: "Menggunakan identitas trigonometri, hasilnya 0"
+                    explanation: "3(1)² + 2(1) - 1 = 4"
                 }
             ]
         };
 
-        // ========================
-        // CORE GAME FUNCTIONS
-        // ========================
-
-        function showDifficultyWarning() {
-            document.getElementById('difficultyWarning').style.display = 'block';
+        // Fungsi untuk mengacak urutan soal
+        function shuffleQuestions() {
+            // Acak semua soal di hari 1
+            const day1Questions = [...questionsData.day1];
+            for (let i = day1Questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [day1Questions[i], day1Questions[j]] = [day1Questions[j], day1Questions[i]];
+            }
+            questionsData.day1 = day1Questions;
         }
 
-        function closeWarning() {
-            document.getElementById('difficultyWarning').style.display = 'none';
+        const materialData = {
+            day1: {
+                title: "📚 Hari 1: Permutasi & Kombinasi",
+                content: `
+                    <div style="background: linear-gradient(145deg, #e3f2ff, #bbdefb); padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+                        <h3 style="color: #1976D2; margin-bottom: 10px;">✨ Apa itu Permutasi?</h3>
+                        <p>Permutasi adalah cara menyusun objek dengan <strong>memperhatikan urutan</strong>.</p>
+                        <p>Contoh: Susunan juara 1, 2, 3 dalam lomba lari.</p>
+                        <p><strong>Rumus:</strong> P(n,r) = n! / (n-r)!</p>
+                        <p><strong>Contoh Soal:</strong> Berapa cara menyusun 3 buku dari 5 buku berbeda?</p>
+                        <p>Jawab: P(5,3) = 5×4×3 = 60 cara</p>
+                    </div>
+                    <div style="background: linear-gradient(145deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;">
+                        <h3 style="color: #2E7D32; margin-bottom: 10px;">✨ Apa itu Kombinasi?</h3>
+                        <p>Kombinasi adalah cara memilih objek <strong>tanpa memperhatikan urutan</strong>.</p>
+                        <p>Contoh: Memilih 3 siswa untuk jadi panitia.</p>
+                        <p><strong>Rumus:</strong> C(n,r) = n! / [r!(n-r)!]</p>
+                        <p><strong>Contoh Soal:</strong> Berapa cara memilih 3 siswa dari 10 siswa?</p>
+                        <p>Jawab: C(10,3) = 120 cara</p>
+                    </div>
+                    <div style="background: linear-gradient(145deg, #fff0f5, #ffe6ee); padding: 20px; border-radius: 15px; margin-top: 20px;">
+                        <h3 style="color: #ff6ba9; margin-bottom: 10px;">💡 Tips Membedakan:</h3>
+                        <p>🔹 <strong>Permutasi:</strong> "Susunan", "urutan", "juara 1,2,3", "password"</p>
+                        <p>🔹 <strong>Kombinasi:</strong> "Memilih", "panitia", "komite", "tim"</p>
+                        <p>🔹 Jika urutan penting → <strong>Permutasi</strong></p>
+                        <p>🔹 Jika urutan tidak penting → <strong>Kombinasi</strong></p>
+                    </div>
+                `
+            },
+            day2: {
+                title: "📚 Hari 2: Peluang (Probability)",
+                content: `
+                    <div style="background: linear-gradient(145deg, #fff3e0, #ffe0b2); padding: 20px; border-radius: 15px;">
+                        <h3 style="color: #EF6C00; margin-bottom: 10px;">✨ Mengenal Peluang</h3>
+                        <p>Peluang mengukur kemungkinan suatu kejadian terjadi.</p>
+                        <p><strong>Nilai:</strong> 0 (mustahil) hingga 1 (pasti).</p>
+                        <p><strong>Rumus:</strong> P(A) = n(A) / n(S)</p>
+                        <p>n(A) = hasil yang diinginkan</p>
+                        <p>n(S) = total kemungkinan</p>
+                    </div>
+                `
+            },
+            day3: {
+                title: "📚 Hari 3: Limit Fungsi",
+                content: `
+                    <div style="background: linear-gradient(145deg, #f3e5f5, #e1bee7); padding: 20px; border-radius: 15px;">
+                        <h3 style="color: #7B1FA2; margin-bottom: 10px;">✨ Konsep Limit</h3>
+                        <p>Limit menunjukkan nilai yang didekati oleh fungsi saat variabel mendekati nilai tertentu.</p>
+                        <p><strong>Notasi:</strong> lim f(x) = L</p>
+                        <p>x→c</p>
+                        <p>Artinya: saat x mendekati c, f(x) mendekati L</p>
+                    </div>
+                `
+            }
+        };
+
+        // ========================
+        // GAME INITIALIZATION
+        // ========================
+        function initGame() {
+            // Acak soal sebelum memulai
+            shuffleQuestions();
+            
+            createBubbles();
             updateUI();
+            updateStudentList();
+            updateRanking();
+            
+            // Set initial progress bars
+            updateProgressBars();
+            
+            // Show welcome message
+            setTimeout(() => {
+                showNotification("Selamat datang di Math Teacher Adventure! ✨", "correct");
+                // Show start day popup automatically
+                setTimeout(() => {
+                    showStartDayPopup();
+                }, 1500);
+            }, 1000);
         }
 
-        function startDay() {
+        function createBubbles() {
+            const bubblesContainer = document.getElementById('bubbles');
+            const colors = ['#ffb8d9', '#a6e3ff', '#ffde59', '#ff9acd', '#6bcbff'];
+            
+            for (let i = 0; i < 20; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 100 + 50;
+                const left = Math.random() * 100;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${left}%`;
+                bubble.style.top = `120%`;
+                bubble.style.background = color;
+                bubble.style.animationDelay = `${Math.random() * 15}s`;
+                bubble.style.opacity = Math.random() * 0.3 + 0.1;
+                
+                bubblesContainer.appendChild(bubble);
+            }
+        }
+
+        // ========================
+        // POPUP FUNCTIONS
+        // ========================
+        function showStartDayPopup() {
+            const topics = ["Permutasi & Kombinasi", "Peluang", "Limit Fungsi", "UJIAN NASIONAL"];
+            const topic = topics[gameState.currentDay - 1];
+            
+            document.getElementById('startDayTitle').textContent = `Mulai Hari ${gameState.currentDay}`;
+            
+            let message = `
+                <p>✨ <strong>Hari ${gameState.currentDay}: ${topic}</strong> ✨</p>
+                <p>Siap untuk memulai pelajaran hari ini?</p>
+                <p>Mari kita ajarkan matematika dengan menyenangkan! 🎓</p>
+            `;
+            
+            if (gameState.currentDay === 1) {
+                message += `
+                    <p><strong>📊 Hari ini ada 10 soal:</strong></p>
+                    <p>• 5 soal Permutasi</p>
+                    <p>• 5 soal Kombinasi</p>
+                    <p>Soal akan muncul secara acak!</p>
+                `;
+            }
+            
+            if (gameState.currentDay === 4) {
+                message += '<p><strong>⚠️ PERINGATAN:</strong> Ini adalah hari Ujian Nasional!</p>';
+            }
+            
+            document.getElementById('startDayMessage').innerHTML = message;
+            
+            document.getElementById('startDayPopup').style.display = 'block';
+        }
+
+        function closePopup(popupId) {
+            document.getElementById(popupId).style.display = 'none';
+        }
+
+        function startDayConfirmed() {
+            closePopup('startDayPopup');
+            
             if (gameState.currentDay === 4) {
                 startExamDay();
                 return;
@@ -1237,13 +1371,62 @@
             showMaterial();
         }
 
+        function showStudentQuestionPopup() {
+            if (!gameState.askingStudent) return;
+            
+            const student = students.find(s => s.name === gameState.askingStudent);
+            
+            document.getElementById('studentQuestionMessage').innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 15px;">
+                    <div style="width: 60px; height: 60px; background: ${student.color}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px;">
+                        ${student.emoji}
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; color: ${student.color};">${student.name}</h3>
+                    </div>
+                </div>
+                <p><strong>${student.name}</strong> memiliki pertanyaan untuk Anda!</p>
+                <p>Klik "Jawab Pertanyaan" untuk membantu ${student.name} memahami materi.</p>
+                <p style="color: #ff6ba9; font-weight: 600;">⏰ Anda punya 10 detik untuk merespon!</p>
+            `;
+            
+            document.getElementById('studentQuestionPopup').style.display = 'block';
+            
+            // Auto close after 10 seconds
+            setTimeout(() => {
+                if (document.getElementById('studentQuestionPopup').style.display === 'block') {
+                    gameState.patience -= 10;
+                    gameState.studentQuestionCount++;
+                    showNotification(`😔 ${student.name} kecewa tidak ditanggapi! -10 Kesabaran`, "incorrect");
+                    closeStudentQuestionPopup();
+                }
+            }, 10000);
+        }
+
+        function answerStudentQuestionPopup() {
+            closePopup('studentQuestionPopup');
+            answerStudentQuestion();
+        }
+
+        function closeStudentQuestionPopup() {
+            closePopup('studentQuestionPopup');
+            gameState.studentQuestionActive = false;
+            gameState.askingStudent = null;
+            updateStudentList();
+            
+            if (gameState.gameActive) {
+                startTimer();
+            }
+        }
+
+        // ========================
+        // GAME CORE FUNCTIONS
+        // ========================
         function showMaterial() {
             const material = materialData[`day${gameState.currentDay}`];
             document.getElementById('materialTitle').textContent = material.title;
             document.getElementById('materialContent').innerHTML = material.content;
             document.getElementById('materialOverlay').style.display = 'flex';
-            document.getElementById('startDayBtn').disabled = true;
-            document.getElementById('nextQuestionBtn').style.display = 'none';
         }
 
         function continueToQuestions() {
@@ -1251,57 +1434,58 @@
             
             gameState.gameActive = true;
             gameState.currentQuestion = 0;
-            gameState.timeLeft = 25; // Reduced timer
+            gameState.timeLeft = 25;
+            gameState.studentQuestionCount = 0; // Reset counter pertanyaan siswa
             
             showQuestion();
             startTimer();
             
-            if (gameState.currentDay === 2 || gameState.currentDay === 3) {
-                scheduleStudentQuestions();
-            }
+            // Show first question notification
+            showNotification("Pertanyaan pertama! Jawab dengan cermat! 💫", "correct");
         }
 
         function showQuestion() {
             if (!gameState.gameActive) return;
             
             const questions = questionsData[`day${gameState.currentDay}`];
-            const question = questions[gameState.currentQuestion];
-            
-            if (!question) {
+            if (!questions || gameState.currentQuestion >= questions.length) {
                 endDay();
                 return;
             }
             
+            const question = questions[gameState.currentQuestion];
             document.getElementById('questionText').textContent = question.question;
-            document.getElementById('questionCounter').textContent = `Pertanyaan ${gameState.currentQuestion + 1}/${questions.length}`;
+            document.getElementById('questionCounter').textContent = `❓ Pertanyaan ${gameState.currentQuestion + 1}/${questions.length}`;
             
             const answerOptions = document.getElementById('answerOptions');
             answerOptions.innerHTML = '';
             
             question.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'answer-btn';
-                button.textContent = option;
-                button.onclick = () => checkAnswer(index);
-                answerOptions.appendChild(button);
+                const answerCard = document.createElement('div');
+                answerCard.className = 'answer-card clickable';
+                answerCard.textContent = option;
+                answerCard.onclick = () => checkAnswer(index);
+                answerOptions.appendChild(answerCard);
             });
+            
+            updateUI();
         }
 
         function checkAnswer(selectedIndex) {
             const questions = questionsData[`day${gameState.currentDay}`];
             const question = questions[gameState.currentQuestion];
-            const buttons = document.querySelectorAll('.answer-btn');
+            const answerCards = document.querySelectorAll('.answer-card');
             
-            buttons.forEach(btn => btn.disabled = true);
+            answerCards.forEach(card => card.style.pointerEvents = 'none');
             stopTimer();
             
             const isCorrect = selectedIndex === question.correct;
             
-            buttons.forEach((btn, index) => {
+            answerCards.forEach((card, index) => {
                 if (index === question.correct) {
-                    btn.classList.add('correct');
+                    card.classList.add('correct');
                 } else if (index === selectedIndex && !isCorrect) {
-                    btn.classList.add('incorrect');
+                    card.classList.add('incorrect');
                 }
             });
             
@@ -1311,283 +1495,64 @@
             if (isCorrect) {
                 gameState.correctAnswers++;
                 gameState.totalCorrectAllDays++;
-                gameState.knowledgePoints += 10;
-                gameState.teacherScore += 10;
+                gameState.teacherScore += 15;
                 gameState.patience = Math.min(100, gameState.patience + 5);
-                showFeedback("✅ Jawaban Benar! +10 Poin", true);
+                
+                // Tampilkan notifikasi dengan informasi soal
+                const questionType = question.type ? ` (${question.type.charAt(0).toUpperCase() + question.type.slice(1)})` : '';
+                showNotification(`🎉 Jawaban Benar${questionType}! +15 Poin`, "correct");
+                
+                // Add sparkle effect to correct answer
+                const correctCard = answerCards[question.correct];
+                correctCard.innerHTML += ' ✨';
             } else {
-                gameState.patience -= 20; // Increased penalty
-                if (gameState.patience <= 0) {
-                    gameState.patience = 0;
-                    showFeedback("😡 KESABARAN HABIS! -20 Kesabaran", false);
-                } else {
-                    showFeedback("❌ Jawaban Salah! -20 Kesabaran", false);
-                }
+                gameState.patience -= 25;
+                if (gameState.patience <= 0) gameState.patience = 0;
+                
+                showNotification(`😢 Jawaban Salah! -25 Kesabaran`, "incorrect");
             }
             
             updateUI();
-            
-            // Check if performance is critically poor
-            checkCriticalPerformance();
+            updateProgressBars();
             
             clearTimeout(gameState.autoNextTimer);
             gameState.autoNextTimer = setTimeout(() => {
                 nextQuestion();
-            }, 1500);
-        }
-
-        function checkCriticalPerformance() {
-            const currentCorrectRate = (gameState.totalCorrectAllDays / gameState.totalQuestionsAllDays) * 100;
-            
-            if (gameState.totalQuestionsAllDays >= 5 && currentCorrectRate < 40) {
-                // Very poor performance
-                document.getElementById('teacherStatus').textContent = "KRITIS";
-                document.getElementById('teacherStatus').style.color = "#F44336";
-                
-                if (gameState.totalQuestionsAllDays >= 10 && currentCorrectRate < 30) {
-                    showFeedback("⚠️ PERINGATAN: Performa mengajar KRITIS!", false);
-                }
-            } else if (currentCorrectRate < 60) {
-                document.getElementById('teacherStatus').textContent = "Buruk";
-                document.getElementById('teacherStatus').style.color = "#FF9800";
-            } else if (currentCorrectRate < 75) {
-                document.getElementById('teacherStatus').textContent = "Cukup";
-                document.getElementById('teacherStatus').style.color = "#FFC107";
-            } else {
-                document.getElementById('teacherStatus').textContent = "Baik";
-                document.getElementById('teacherStatus').style.color = "#4CAF50";
-            }
+            }, 2000);
         }
 
         function nextQuestion() {
             gameState.currentQuestion++;
-            const questions = questionsData[`day${gameState.currentDay}`];
-            
-            if (gameState.currentQuestion >= questions.length) {
-                endDay();
-                return;
-            }
-            
-            gameState.timeLeft = 25; // Reduced timer
-            document.getElementById('timer').textContent = `⏰ ${gameState.timeLeft}s`;
+            gameState.timeLeft = 25;
             
             showQuestion();
             startTimer();
-        }
-
-        function scheduleStudentQuestions() {
-            // Clear any existing timers
-            clearAllStudentTimers();
             
-            // Set question frequency based on day - MUCH FASTER
-            let baseDelay, randomRange;
+            // Enable answer cards
+            document.querySelectorAll('.answer-card').forEach(card => {
+                card.style.pointerEvents = 'auto';
+                card.classList.remove('correct', 'incorrect');
+            });
             
-            if (gameState.currentDay === 2) {
-                // Day 2: Questions come VERY frequently
-                baseDelay = 4000; // 4 seconds base
-                randomRange = 3000; // +/- 3 seconds random
-            } else if (gameState.currentDay === 3) {
-                // Day 3: Questions come EXTREMELY fast
-                baseDelay = 2000; // 2 seconds base
-                randomRange = 2000; // +/- 2 seconds random
+            // Random student question chance - DITINGKATKAN
+            // Siswa lebih sering bertanya, terutama jika sudah menjawab beberapa soal
+            let chance = gameState.studentQuestionChance;
+            
+            // Tambah peluang jika sudah banyak soal dijawab
+            if (gameState.currentQuestion >= 3) {
+                chance += 0.1;
             }
             
-            // Schedule first question immediately after starting
-            const immediateTimer = setTimeout(() => {
+            // Tambah peluang jika belum banyak siswa bertanya hari ini
+            if (gameState.studentQuestionCount < 2) {
+                chance += 0.15;
+            }
+            
+            // Pastikan peluang tidak lebih dari 0.7 (70%)
+            chance = Math.min(0.7, chance);
+            
+            if (Math.random() < chance) {
                 triggerStudentQuestion();
-                scheduleNextStudentQuestion(baseDelay, randomRange);
-            }, 1500); // First question appears after 1.5 seconds
-            
-            gameState.studentQuestionTimers.push(immediateTimer);
-        }
-
-        function scheduleNextStudentQuestion(baseDelay, randomRange) {
-            if (!gameState.gameActive || gameState.studentQuestionActive) return;
-            
-            const delay = baseDelay + Math.random() * randomRange;
-            const timer = setTimeout(() => {
-                if (!gameState.studentQuestionActive && gameState.gameActive) {
-                    triggerStudentQuestion();
-                    scheduleNextStudentQuestion(baseDelay, randomRange);
-                }
-            }, delay);
-            
-            gameState.studentQuestionTimers.push(timer);
-        }
-
-        function clearAllStudentTimers() {
-            gameState.studentQuestionTimers.forEach(timer => clearTimeout(timer));
-            gameState.studentQuestionTimers = [];
-        }
-
-        function triggerStudentQuestion() {
-            if (!gameState.gameActive || gameState.studentQuestionActive) return;
-            
-            const dayQuestions = studentQuestions[`day${gameState.currentDay}`];
-            if (!dayQuestions || dayQuestions.length === 0) return;
-            
-            const randomQuestion = dayQuestions[Math.floor(Math.random() * dayQuestions.length)];
-            gameState.askingStudent = randomQuestion.student;
-            gameState.studentQuestionActive = true;
-            
-            updateStudentList();
-            document.getElementById('questionStudent').textContent = gameState.askingStudent;
-            document.getElementById('questionIndicator').style.display = 'block';
-            document.getElementById('askBtn').disabled = false;
-            highlightAskingStudent();
-            
-            // Set auto timeout for student question (10 seconds - reduced)
-            const autoCloseTimer = setTimeout(() => {
-                if (gameState.studentQuestionActive) {
-                    gameState.patience -= 10; // Increased penalty
-                    studentScores[gameState.askingStudent] = Math.max(0, studentScores[gameState.askingStudent] - 0.3);
-                    showFeedback(`⏰ ${gameState.askingStudent} menunggu terlalu lama! -10 Kesabaran, nilai turun`, false);
-                    closeStudentQuestion();
-                }
-            }, 10000); // Reduced from 15 seconds
-            
-            gameState.studentQuestionTimers.push(autoCloseTimer);
-        }
-
-        function highlightAskingStudent() {
-            const studentItems = document.querySelectorAll('.student-item');
-            studentItems.forEach(item => {
-                if (item.textContent.includes(gameState.askingStudent)) {
-                    item.classList.add('has-question');
-                }
-            });
-        }
-
-        function answerStudentQuestion() {
-            if (!gameState.askingStudent) return;
-            
-            const dayQuestions = studentQuestions[`day${gameState.currentDay}`];
-            const question = dayQuestions.find(q => q.student === gameState.askingStudent);
-            
-            if (!question) return;
-            
-            stopTimer();
-            
-            document.getElementById('studentQuestionContent').innerHTML = `
-                <h3>${question.student} bertanya:</h3>
-                <p style="font-size: 18px; margin: 10px 0;">"${question.question}"</p>
-            `;
-            
-            const optionsDiv = document.getElementById('studentQuestionOptions');
-            optionsDiv.innerHTML = '';
-            
-            question.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'control-btn';
-                button.style.width = '100%';
-                button.style.margin = '5px 0';
-                button.textContent = option;
-                button.onclick = () => checkStudentAnswer(index, question);
-                optionsDiv.appendChild(button);
-            });
-            
-            document.getElementById('studentQuestionOverlay').style.display = 'flex';
-            document.getElementById('askBtn').disabled = true;
-        }
-
-        function checkStudentAnswer(selectedIndex, question) {
-            const isCorrect = selectedIndex === question.correct;
-            
-            if (isCorrect) {
-                studentScores[gameState.askingStudent] = Math.min(10, studentScores[gameState.askingStudent] + 0.5);
-                gameState.teacherScore += 15;
-                gameState.studentQuestionsAnswered++;
-                gameState.patience = Math.min(100, gameState.patience + 10);
-                showFeedback(`✅ Jawaban benar untuk ${gameState.askingStudent}! +15 Poin & nilai siswa naik!`, true);
-            } else {
-                gameState.patience -= 15; // Increased penalty
-                studentScores[gameState.askingStudent] = Math.max(0, studentScores[gameState.askingStudent] - 0.5);
-                showFeedback(`❌ Jawaban salah untuk ${gameState.askingStudent}. -15 Kesabaran, nilai siswa turun!`, false);
-            }
-            
-            updateUI();
-            closeStudentQuestion();
-        }
-
-        function closeStudentQuestion() {
-            document.getElementById('studentQuestionOverlay').style.display = 'none';
-            document.getElementById('questionIndicator').style.display = 'none';
-            
-            const studentItems = document.querySelectorAll('.student-item');
-            studentItems.forEach(item => {
-                item.classList.remove('has-question');
-            });
-            
-            gameState.studentQuestionActive = false;
-            gameState.askingStudent = null;
-            
-            if (gameState.gameActive && (gameState.currentDay === 2 || gameState.currentDay === 3)) {
-                startTimer();
-            }
-        }
-
-        function endDay() {
-            gameState.gameActive = false;
-            stopTimer();
-            clearAllStudentTimers();
-            
-            if (gameState.autoNextTimer) {
-                clearTimeout(gameState.autoNextTimer);
-            }
-            
-            const questions = questionsData[`day${gameState.currentDay}`];
-            const dayScore = Math.round((gameState.correctAnswers / questions.length) * 100);
-            gameState.teacherScore += dayScore;
-            
-            document.getElementById('dayQuestionsAnswered').textContent = gameState.questionsAnswered;
-            document.getElementById('dayTotalQuestions').textContent = questions.length;
-            document.getElementById('dayCorrectAnswers').textContent = gameState.correctAnswers;
-            document.getElementById('totalCorrectSoFar').textContent = gameState.totalCorrectAllDays;
-            document.getElementById('totalQuestionsSoFar').textContent = gameState.totalQuestionsAllDays;
-            document.getElementById('dayStudentQuestions').textContent = gameState.studentQuestionsAnswered;
-            document.getElementById('dayScore').textContent = dayScore;
-            document.getElementById('totalTeacherScore').textContent = gameState.teacherScore;
-            
-            document.getElementById('dayCompleteOverlay').style.display = 'flex';
-            updateUI();
-            
-            // Check if performance is too poor to continue
-            if (gameState.totalQuestionsAllDays >= 10) {
-                const correctRate = (gameState.totalCorrectAllDays / gameState.totalQuestionsAllDays) * 100;
-                if (correctRate < 30) {
-                    showFeedback("⚠️ PERINGATAN: Performa Anda sangat buruk! Risiko dipecat tinggi!", false);
-                }
-            }
-        }
-
-        function autoNextDay() {
-            document.getElementById('dayCompleteOverlay').style.display = 'none';
-            
-            if (gameState.currentDay >= 3) {
-                gameState.currentDay++;
-                updateUI();
-                showFeedback("✅ Semua materi selesai! Siap untuk ujian hari 4!", true);
-                setTimeout(() => {
-                    startExamDay();
-                }, 2000);
-            } else {
-                gameState.currentDay++;
-                gameState.currentQuestion = 0;
-                gameState.questionsAnswered = 0;
-                gameState.correctAnswers = 0;
-                gameState.studentQuestionsAnswered = 0;
-                gameState.studentQuestionActive = false;
-                gameState.askingStudent = null;
-                
-                updateUI();
-                document.getElementById('questionText').textContent = `Hari ${gameState.currentDay} dimulai! Klik "Mulai Hari" untuk melanjutkan.`;
-                document.getElementById('startDayBtn').disabled = false;
-                document.getElementById('askBtn').disabled = true;
-                document.getElementById('restartBtn').style.display = 'none';
-                
-                setTimeout(() => {
-                    startDay();
-                }, 1000);
             }
         }
 
@@ -1595,11 +1560,16 @@
             if (gameState.timerActive) return;
             
             gameState.timerActive = true;
-            gameState.timeLeft = 25; // Reduced timer
+            gameState.timeLeft = 25;
             
             gameState.timerInterval = setInterval(() => {
                 gameState.timeLeft--;
                 document.getElementById('timer').textContent = `⏰ ${gameState.timeLeft}s`;
+                
+                // Color warning when time is low
+                if (gameState.timeLeft <= 10) {
+                    document.getElementById('timer').style.background = 'linear-gradient(145deg, #ff5252, #ff6b6b)';
+                }
                 
                 if (gameState.timeLeft <= 0) {
                     timeUp();
@@ -1614,590 +1584,505 @@
 
         function timeUp() {
             stopTimer();
-            gameState.patience -= 25; // Increased penalty
-            showFeedback("⏰ Waktu habis! -25 Kesabaran", false);
+            gameState.patience -= 20;
+            showNotification("⏰ Waktu habis! -20 Kesabaran", "incorrect");
             
-            const buttons = document.querySelectorAll('.answer-btn');
-            buttons.forEach(btn => btn.disabled = true);
+            const answerCards = document.querySelectorAll('.answer-card');
+            answerCards.forEach(card => card.style.pointerEvents = 'none');
             
             clearTimeout(gameState.autoNextTimer);
             gameState.autoNextTimer = setTimeout(() => {
                 nextQuestion();
-            }, 1500);
+            }, 2000);
             
             updateUI();
+            updateProgressBars();
         }
 
-        function updateUI() {
-            document.getElementById('dayCounter').textContent = `Hari ${gameState.currentDay}/4`;
-            document.getElementById('topicDisplay').textContent = gameState.currentDay === 4 ? "UJIAN NASIONAL" : 
-                gameState.currentDay === 1 ? "Permutasi & Kombinasi" :
-                gameState.currentDay === 2 ? "Peluang" : "Limit Fungsi";
-            
-            document.getElementById('patienceValue').textContent = `${gameState.patience}%`;
-            document.getElementById('moraleValue').textContent = gameState.morale;
-            
-            const questions = questionsData[`day${gameState.currentDay}`] || [];
-            document.getElementById('questionsAnswered').textContent = `${gameState.questionsAnswered}/${questions.length}`;
-            
-            // Update total correct display
-            document.getElementById('totalCorrectDisplay').textContent = `${gameState.totalCorrectAllDays}/20`;
-            document.getElementById('totalCorrectValue').textContent = gameState.totalCorrectAllDays;
-            
-            // Calculate average score
-            const average = gameState.totalQuestionsAllDays > 0 ? 
-                Math.round((gameState.totalCorrectAllDays / gameState.totalQuestionsAllDays) * 100) : 0;
-            document.getElementById('averageScore').textContent = `${average}%`;
-            
-            document.getElementById('scoreValue').textContent = gameState.teacherScore;
-            document.getElementById('teacherScore').style.display = 'block';
-            
-            updateStudentList();
-            updateRanking();
-            checkCriticalPerformance();
-        }
-
+        // ========================
+        // STUDENT INTERACTIONS - DITINGKATKAN FREKUENSINYA
+        // ========================
         function updateStudentList() {
             const studentList = document.getElementById('studentList');
             studentList.innerHTML = '';
             
             students.forEach(student => {
-                const div = document.createElement('div');
-                div.className = 'student-item';
+                const studentCard = document.createElement('div');
+                studentCard.className = 'student-card clickable';
                 
-                if (gameState.askingStudent === student) {
-                    div.classList.add('has-question');
+                if (gameState.askingStudent === student.name) {
+                    studentCard.classList.add('asking');
                 }
                 
-                if (gameState.caughtStudents.includes(student)) {
-                    div.classList.add('sent-bk');
-                    div.innerHTML = `
-                        <strong>${student}</strong><br>
-                        <small>Pemahaman: ${studentScores[student].toFixed(1)}K</small><br>
-                        <small style="color: #4CAF50;">✅ Sudah dikirim BK</small>
-                    `;
-                } else if (gameState.cheatedStudents.includes(student)) {
-                    div.classList.add('truant');
-                    div.innerHTML = `
-                        <strong>${student}</strong><br>
-                        <small>Pemahaman: ${studentScores[student].toFixed(1)}K</small><br>
-                        <small style="color: #FF9800;">⚠️ Dapat contekan</small>
-                    `;
-                } else {
-                    div.innerHTML = `
-                        <strong>${student}</strong><br>
-                        <small>Pemahaman: ${studentScores[student].toFixed(1)}K</small>
-                    `;
-                }
+                studentCard.innerHTML = `
+                    <div class="student-avatar" style="background: ${student.color}">
+                        ${student.emoji}
+                    </div>
+                    <div class="student-info">
+                        <div class="student-name">${student.name}</div>
+                        <div class="student-score">Pemahaman: ${studentScores[student.name].toFixed(1)}K</div>
+                    </div>
+                `;
                 
-                if (gameState.askingStudent === student) {
-                    div.onclick = () => answerStudentQuestion();
-                }
+                studentCard.onclick = () => {
+                    if (gameState.askingStudent === student.name) {
+                        closePopup('studentQuestionPopup');
+                        answerStudentQuestion();
+                    } else {
+                        showNotification(`👋 Hai ${student.name}! Pemahaman: ${studentScores[student.name].toFixed(1)}K`, "correct");
+                    }
+                };
                 
-                studentList.appendChild(div);
+                studentList.appendChild(studentCard);
             });
+        }
+
+        function triggerStudentQuestion() {
+            if (!gameState.gameActive || gameState.studentQuestionActive) return;
+            
+            const randomStudent = students[Math.floor(Math.random() * students.length)];
+            gameState.askingStudent = randomStudent.name;
+            gameState.studentQuestionActive = true;
+            gameState.studentQuestionCount++;
+            
+            updateStudentList();
+            
+            // Show student question popup
+            showStudentQuestionPopup();
+            stopTimer();
+            
+            // Juga tambah notifikasi
+            showNotification(`${randomStudent.emoji} ${randomStudent.name} ingin bertanya!`, "correct");
+        }
+
+        function answerStudentQuestion() {
+            if (!gameState.askingStudent) return;
+            
+            const student = students.find(s => s.name === gameState.askingStudent);
+            
+            // Create questions based on current day and question type
+            let question, options, correct;
+            const currentQuestion = questionsData[`day${gameState.currentDay}`][gameState.currentQuestion];
+            const questionType = currentQuestion?.type || "umum";
+            
+            if (gameState.currentDay === 1) {
+                // Pertanyaan khusus untuk permutasi dan kombinasi
+                if (questionType === "permutasi") {
+                    question = "Pak, apa bedanya permutasi dan kombinasi?";
+                    options = [
+                        "Permutasi memperhatikan urutan, kombinasi tidak",
+                        "Kombinasi untuk memilih, permutasi untuk menyusun",
+                        "Permutasi menggunakan faktorial, kombinasi tidak",
+                        "Tidak ada bedanya, sama saja"
+                    ];
+                    correct = 0;
+                } else if (questionType === "kombinasi") {
+                    question = "Pak, kapan kita menggunakan kombinasi?";
+                    options = [
+                        "Saat memilih panitia tanpa urutan",
+                        "Saat menentukan juara lomba",
+                        "Saat menyusun password",
+                        "Saat menghitung peluang dadu"
+                    ];
+                    correct = 0;
+                } else {
+                    question = "Pak, saya kurang paham dengan materi ini...";
+                    options = ["Saya akan jelaskan lagi", "Pelajari sendiri", "Tanya teman", "Lewati saja"];
+                    correct = 0;
+                }
+            } else if (gameState.currentDay === 2) {
+                question = "Pak, kenapa peluang selalu antara 0 dan 1?";
+                options = ["Karena definisi probabilitas", "Agar mudah dihitung", "Kebiasaan saja", "Bisa lebih dari 1"];
+                correct = 0;
+            } else if (gameState.currentDay === 3) {
+                question = "Pak, apa artinya limit tak hingga?";
+                options = ["Nilai semakin besar tanpa batas", "Tidak terdefinisi", "Sama dengan 0", "Hasilnya 1"];
+                correct = 0;
+            } else {
+                question = "Pak, saya kurang paham dengan materi ini...";
+                options = ["Saya akan jelaskan lagi", "Pelajari sendiri", "Tanya teman", "Lewati saja"];
+                correct = 0;
+            }
+            
+            document.getElementById('studentQuestionContent').innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    <div style="width: 60px; height: 60px; background: ${student.color}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px;">
+                        ${student.emoji}
+                    </div>
+                    <div>
+                        <h3 style="color: ${student.color}; margin: 0;">${student.name}</h3>
+                        <p style="margin: 5px 0 0 0; color: #666;">bertanya...</p>
+                    </div>
+                </div>
+                <p style="font-size: 1.2rem; color: #5a3d5c; font-style: italic;">"${question}"</p>
+                ${questionType !== "umum" ? `<p style="margin-top: 10px; color: #6bcbff; font-weight: 600;">📚 Topik: ${questionType.charAt(0).toUpperCase() + questionType.slice(1)}</p>` : ''}
+            `;
+            
+            const optionsDiv = document.getElementById('studentQuestionOptions');
+            optionsDiv.innerHTML = '';
+            
+            options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'control-btn';
+                button.style.width = '100%';
+                button.style.background = 'linear-gradient(145deg, #6bcbff, #0099ff)';
+                button.textContent = option;
+                button.onclick = () => handleStudentAnswer(index === correct, student);
+                optionsDiv.appendChild(button);
+            });
+            
+            document.getElementById('studentQuestionDetailOverlay').style.display = 'flex';
+        }
+
+        function handleStudentAnswer(isCorrect, student) {
+            document.getElementById('studentQuestionDetailOverlay').style.display = 'none';
+            
+            if (isCorrect) {
+                studentScores[student.name] = Math.min(10, studentScores[student.name] + 0.8);
+                gameState.teacherScore += 25; // Bonus lebih besar untuk pertanyaan siswa
+                gameState.patience = Math.min(100, gameState.patience + 20);
+                gameState.morale += 15;
+                
+                showNotification(`✨ Jawaban tepat! ${student.name} semakin paham! +25 Poin`, "correct");
+            } else {
+                gameState.patience -= 15;
+                studentScores[student.name] = Math.max(0, studentScores[student.name] - 0.5);
+                
+                showNotification(`😅 Jawaban kurang tepat... -15 Kesabaran`, "incorrect");
+            }
+            
+            closeStudentQuestionDetail();
+            updateUI();
+            updateProgressBars();
+        }
+
+        function closeStudentQuestionDetail() {
+            document.getElementById('studentQuestionDetailOverlay').style.display = 'none';
+            gameState.studentQuestionActive = false;
+            gameState.askingStudent = null;
+            
+            updateStudentList();
+            
+            if (gameState.gameActive) {
+                startTimer();
+            }
+        }
+
+        // ========================
+        // UI UPDATES
+        // ========================
+        function updateUI() {
+            // Update day and topic
+            document.getElementById('dayNumber').textContent = gameState.currentDay;
+            const topics = ["Permutasi & Kombinasi", "Peluang", "Limit Fungsi", "UJIAN NASIONAL"];
+            document.getElementById('topicDisplay').textContent = `📚 ${topics[gameState.currentDay - 1]}`;
+            
+            // Update stats
+            document.getElementById('patienceValue').textContent = `${gameState.patience}%`;
+            document.getElementById('moraleValue').textContent = gameState.morale;
+            document.getElementById('totalCorrectDisplay').textContent = `${gameState.totalCorrectAllDays}/20`;
+            document.getElementById('teacherScore').textContent = gameState.teacherScore;
+            
+            // Calculate average
+            const average = gameState.totalQuestionsAllDays > 0 ? 
+                Math.round((gameState.totalCorrectAllDays / gameState.totalQuestionsAllDays) * 100) : 0;
+            document.getElementById('averageScore').textContent = `${average}%`;
+            
+            // Update teacher status
+            const status = document.getElementById('teacherStatus');
+            if (gameState.patience < 30) {
+                status.textContent = "Stres 😫";
+                status.style.color = "#FF5252";
+            } else if (gameState.patience < 60) {
+                status.textContent = "Lelah 😓";
+                status.style.color = "#FF9800";
+            } else if (gameState.patience < 80) {
+                status.textContent = "Baik 😊";
+                status.style.color = "#4CAF50";
+            } else {
+                status.textContent = "Sangat Baik 😄";
+                status.style.color = "#2E7D32";
+            }
+            
+            updateProgressBars();
+            updateRanking();
+        }
+
+        function updateProgressBars() {
+            // Patience bar
+            const patienceBar = document.getElementById('patienceBar');
+            patienceBar.style.width = `${gameState.patience}%`;
+            
+            // Update bar color based on value
+            if (gameState.patience < 30) {
+                patienceBar.style.background = 'linear-gradient(90deg, #ff5252, #ff6b6b)';
+            } else if (gameState.patience < 60) {
+                patienceBar.style.background = 'linear-gradient(90deg, #ff9800, #ffb347)';
+            } else {
+                patienceBar.style.background = 'linear-gradient(90deg, #ff9acd, #ff6ba9)';
+            }
+            
+            // Correctness bar
+            const correctnessBar = document.getElementById('correctnessBar');
+            const correctness = (gameState.totalCorrectAllDays / 20) * 100;
+            correctnessBar.style.width = `${correctness}%`;
         }
 
         function updateRanking() {
             const rankingList = document.getElementById('rankingList');
             rankingList.innerHTML = '';
             
-            const sortedStudents = [...students].sort((a, b) => studentScores[b] - studentScores[a]);
+            // Sort students by score
+            const sortedStudents = [...students].sort((a, b) => 
+                studentScores[b.name] - studentScores[a.name]
+            );
             
             sortedStudents.forEach((student, index) => {
-                const div = document.createElement('div');
-                div.className = 'ranking-item';
-                div.innerHTML = `
-                    <span>${index + 1}. ${student}</span>
-                    <span>${studentScores[student].toFixed(1)}K</span>
+                const rankItem = document.createElement('div');
+                rankItem.className = 'ranking-item';
+                
+                rankItem.innerHTML = `
+                    <div class="ranking-position">${index + 1}</div>
+                    <div class="ranking-name">${student.name}</div>
+                    <div class="ranking-score">${studentScores[student.name].toFixed(1)}K</div>
                 `;
-                rankingList.appendChild(div);
+                
+                rankItem.onclick = () => {
+                    showNotification(`👋 ${student.name}: ${studentScores[student.name].toFixed(1)}K pemahaman`, "correct");
+                };
+                
+                rankingList.appendChild(rankItem);
             });
         }
 
-        function showFeedback(message, isCorrect) {
-            const feedback = document.getElementById('feedback');
-            feedback.textContent = message;
-            feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
-            feedback.style.display = 'block';
+        // ========================
+        // DAY PROGRESSION
+        // ========================
+        function endDay() {
+            gameState.gameActive = false;
+            stopTimer();
             
+            const questions = questionsData[`day${gameState.currentDay}`];
+            const dayScore = Math.round((gameState.correctAnswers / questions.length) * 100);
+            gameState.teacherScore += dayScore;
+            
+            // Tambah bonus berdasarkan pertanyaan siswa yang dijawab
+            const studentQuestionBonus = gameState.studentQuestionCount * 10;
+            gameState.teacherScore += studentQuestionBonus;
+            
+            // Update day complete overlay
+            document.getElementById('dayCorrectAnswers').textContent = gameState.correctAnswers;
+            document.getElementById('totalCorrectSoFar').textContent = `${gameState.totalCorrectAllDays}/20`;
+            document.getElementById('dayScore').textContent = dayScore + studentQuestionBonus;
+            
+            // Show celebration dengan statistik pertanyaan siswa
+            let celebrationMsg = `🎉 Hari ${gameState.currentDay} selesai! Skor: ${dayScore}`;
+            if (studentQuestionBonus > 0) {
+                celebrationMsg += ` (+${studentQuestionBonus} bonus pertanyaan siswa)`;
+            }
+            showNotification(celebrationMsg, "correct");
+            
+            // Reset for next day
+            gameState.questionsAnswered = 0;
+            gameState.correctAnswers = 0;
+            gameState.studentQuestionCount = 0;
+            
+            // Show day complete overlay
             setTimeout(() => {
-                feedback.style.display = 'none';
-            }, 3000);
-        }
-
-        // ========================
-        // DAY 4 EXAM FUNCTIONS
-        // ========================
-
-        function startExamDay() {
-            gameState.examActive = true;
-            gameState.currentDay = 4;
-            gameState.examTimeLeft = 120;
-            gameState.remainingActions = 4;
-            
-            calculateExamResults();
-            document.querySelector('.main-grid').style.display = 'none';
-            document.querySelector('.game-controls').style.display = 'none';
-            
-            updateExamStats();
-            document.getElementById('examOverlay').style.display = 'flex';
-            document.getElementById('riskIndicator').style.display = 'block';
-            updateRiskIndicator();
-            startExamTimer();
-        }
-
-        function startExamTimer() {
-            updateExamTimeDisplay();
-            
-            gameState.examTimerInterval = setInterval(() => {
-                gameState.examTimeLeft--;
-                updateExamTimeDisplay();
-                
-                if (gameState.examTimeLeft <= 0) {
-                    clearInterval(gameState.examTimerInterval);
-                    finishExam();
-                }
+                document.getElementById('dayCompleteOverlay').style.display = 'flex';
             }, 1000);
         }
 
-        function updateExamTimeDisplay() {
-            const hours = Math.floor(gameState.examTimeLeft / 60);
-            const minutes = gameState.examTimeLeft % 60;
-            const timeString = `${hours}:${minutes.toString().padStart(2, '0')}`;
+        function autoNextDay() {
+            document.getElementById('dayCompleteOverlay').style.display = 'none';
             
-            document.getElementById('examTimeLeft').textContent = timeString;
-            document.getElementById('patrolTimeLeft').textContent = timeString;
-            document.getElementById('roamTimeLeft').textContent = timeString;
+            if (gameState.currentDay >= 3) {
+                // Go to exam
+                gameState.currentDay = 4;
+                updateUI();
+                setTimeout(() => {
+                    startExamDay();
+                }, 1500);
+            } else {
+                // Go to next day
+                gameState.currentDay++;
+                updateUI();
+                
+                // Reset question counter
+                gameState.currentQuestion = 0;
+                
+                // Update question text
+                document.getElementById('questionText').textContent = 
+                    `Hari ${gameState.currentDay} dimulai! Siap untuk materi baru? ✨`;
+                
+                // Show start day popup automatically
+                setTimeout(() => {
+                    showStartDayPopup();
+                }, 500);
+            }
+        }
+
+        // ========================
+        // EXAM DAY
+        // ========================
+        function startExamDay() {
+            gameState.examActive = true;
+            
+            // Hide main grid and controls
+            document.querySelector('.main-grid').style.display = 'none';
+            document.querySelector('.game-controls').style.display = 'none';
+            
+            // Calculate exam results
+            calculateExamResults();
+            
+            // Show exam overlay
+            document.getElementById('examOverlay').style.display = 'flex';
+            
+            // Show notification
+            showNotification("🎓 Ujian Nasional dimulai! Ini hari penentuan!", "correct");
         }
 
         function calculateExamResults() {
-            gameState.examResults = [];
+            // Calculate based on teaching quality
+            const teachingQuality = Math.min(1, gameState.totalCorrectAllDays / 20);
             
-            students.forEach(student => {
-                // Base score depends on teaching quality (correct answers)
-                const teachingQuality = Math.min(1, gameState.totalCorrectAllDays / 20);
-                let baseScore = (studentScores[student] - 4.0) * 40 * teachingQuality;
-                baseScore = Math.max(0, Math.min(60, baseScore));
-                
-                // If teaching was poor, students perform worse
-                const variation = (Math.random() - 0.5) * 40;
-                let examScore = Math.max(0, Math.min(100, baseScore + 40 + variation));
-                
-                // Apply penalty for poor teaching
-                if (gameState.totalCorrectAllDays < gameState.warningThreshold) {
-                    examScore *= 0.6; // 40% penalty for very poor teaching
-                } else if (gameState.totalCorrectAllDays < gameState.requiredCorrect) {
-                    examScore *= 0.8; // 20% penalty for poor teaching
-                }
-                
-                // Bonus for excellent teaching
-                if (gameState.totalCorrectAllDays >= gameState.perfectBonus) {
-                    examScore *= 1.2; // 20% bonus for excellent teaching
-                    examScore = Math.min(100, examScore);
-                }
-                
-                const passed = examScore >= 60;
-                const cheating = gameState.cheatedStudents.includes(student);
-                
-                gameState.examResults.push({
-                    student,
-                    score: examScore,
-                    passed,
-                    cheating
-                });
-            });
-        }
-
-        function updateExamStats() {
-            const results = gameState.examResults;
-            const avgScore = results.reduce((sum, r) => sum + r.score, 0) / results.length;
+            // Average score
+            let avgScore = 50 + (teachingQuality * 30) + (Math.random() * 20 - 10);
+            avgScore = Math.max(0, Math.min(100, avgScore));
+            
+            // Pass rate
+            let passRate = 40 + (teachingQuality * 40) + (Math.random() * 20 - 10);
+            passRate = Math.max(0, Math.min(100, passRate));
+            
+            // Risk level
+            let riskLevel = 60 - (teachingQuality * 40) + (Math.random() * 20 - 10);
+            riskLevel = Math.max(0, Math.min(100, riskLevel));
+            
+            // Update display
             document.getElementById('examAvgScore').textContent = avgScore.toFixed(1);
+            document.getElementById('examPassRate').textContent = `${Math.round(passRate)}%`;
+            document.getElementById('examRisk').textContent = `${Math.round(riskLevel)}%`;
             
-            const passedCount = results.filter(r => r.passed).length;
-            const passRate = (passedCount / results.length) * 100;
-            document.getElementById('examPassRate').textContent = `${passRate.toFixed(0)}%`;
-            
-            // Calculate risk based on teaching performance
-            const correctRate = (gameState.totalCorrectAllDays / 20) * 100;
-            let risk = 30; // Base risk
-            
-            if (correctRate < 40) {
-                risk = 80; // High risk for very poor teaching
-            } else if (correctRate < 60) {
-                risk = 60; // Medium risk for poor teaching
-            } else if (correctRate < 75) {
-                risk = 40; // Moderate risk for average teaching
-            } else {
-                risk = 20; // Low risk for good teaching
-            }
-            
-            const cheatingCount = results.filter(r => r.cheating).length;
-            risk = Math.min(100, risk + (cheatingCount * 20)); // Increased penalty for cheating
-            
-            gameState.riskLevel = risk;
-            document.getElementById('examRisk').textContent = `${risk.toFixed(0)}%`;
-            
-            return { avgScore, passRate, risk, cheatingCount, correctRate };
-        }
-
-        function updateRiskIndicator() {
-            const stats = updateExamStats();
-            document.getElementById('riskValue').textContent = `${stats.risk.toFixed(0)}%`;
-        }
-
-        function startPatrol() {
-            if (gameState.remainingActions <= 0) {
-                showFeedback("⏰ Tidak ada waktu tersisa untuk patroli!", false);
-                return;
-            }
-            
-            gameState.examTimeLeft -= 30;
-            gameState.remainingActions--;
-            updateExamTimeDisplay();
-            
-            document.getElementById('examOverlay').style.display = 'none';
-            document.getElementById('patrolOverlay').style.display = 'flex';
-            spawnTruantNPC();
-        }
-
-        function spawnTruantNPC() {
-            const patrolContent = document.getElementById('patrolContent');
-            const randomNPC = npcStudents[Math.floor(Math.random() * npcStudents.length)];
-            const randomScore = (3.0 + Math.random() * 2.0).toFixed(1);
-            
-            patrolContent.innerHTML = `
-                <div style="background: #ffebee; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                    <h3>👮 Ketahuan Bolos!</h3>
-                    <p><strong>${randomNPC}</strong> (Siswa NPC) ketahuan bermain di toilet saat ujian.</p>
-                    <p>Nilai rata-rata: ${randomScore}</p>
-                    
-                    <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button class="control-btn" style="background: #2196F3;" onclick="sendNPCToBK('${randomNPC}')">
-                            Kirim ke BK<br><small>+10 Skor Guru</small>
-                        </button>
-                        <button class="control-btn" style="background: #FF9800;" onclick="ignoreNPC('${randomNPC}')">
-                            Biarkan saja<br><small>Tidak ada efek</small>
-                        </button>
-                    </div>
-                </div>
-                <p style="text-align: center; color: #666; margin-top: 20px;">
-                    ⚠️ Siswa NPC tidak mempengaruhi nilai siswa utama
-                </p>
-            `;
-        }
-
-        function sendNPCToBK(npcName) {
-            gameState.teacherScore += 10;
-            showFeedback(`✅ ${npcName} dikirim BK! +10 Skor Guru`, true);
-            document.getElementById('scoreValue').textContent = gameState.teacherScore;
-            setTimeout(spawnTruantNPC, 1000);
-        }
-
-        function ignoreNPC(npcName) {
-            showFeedback(`⏭️ ${npcName} dibiarkan saja`, false);
-            setTimeout(spawnTruantNPC, 1000);
-        }
-
-        function endPatrol() {
-            document.getElementById('patrolOverlay').style.display = 'none';
-            document.getElementById('examOverlay').style.display = 'flex';
-            updateExamStats();
-        }
-
-        function startRoaming() {
-            if (gameState.remainingActions <= 0) {
-                showFeedback("⏰ Tidak ada waktu tersisa untuk jalan-jalan!", false);
-                return;
-            }
-            
-            gameState.examTimeLeft -= 30;
-            gameState.remainingActions--;
-            updateExamTimeDisplay();
-            
-            document.getElementById('examOverlay').style.display = 'none';
-            document.getElementById('roamOverlay').style.display = 'flex';
-            document.getElementById('moraleDisplay').textContent = gameState.morale;
-        }
-
-        function buyIceCream(flavor) {
-            if (gameState.iceCreamBought) {
-                showFeedback("🍦 Sudah beli es krim hari ini!", false);
-                return;
-            }
-            
-            let boost = 0;
-            let message = "";
-            
-            switch(flavor) {
-                case 'vanilla': boost = 10; message = "🍨 Vanila segar!"; break;
-                case 'chocolate': boost = 15; message = "🍫 Coklat enak!"; break;
-                case 'strawberry': boost = 20; message = "🍓 Stroberi manis!"; break;
-            }
-            
-            gameState.morale = Math.min(100, gameState.morale + boost);
-            gameState.iceCreamBought = true;
-            
-            document.getElementById('moraleDisplay').textContent = gameState.morale;
-            document.getElementById('moraleValue').textContent = gameState.morale;
-            showFeedback(`${message} +${boost} Semangat`, true);
-        }
-
-        function endRoaming() {
-            document.getElementById('roamOverlay').style.display = 'none';
-            document.getElementById('examOverlay').style.display = 'flex';
+            // Store for final result
+            gameState.examResults = { avgScore, passRate, riskLevel };
         }
 
         function finishExam() {
-            clearInterval(gameState.examTimerInterval);
-            
-            const stats = updateExamStats();
-            
-            // Check if teaching was too poor
-            let keepJob = true;
-            let reason = "";
-            
-            // AUTOMATIC FAILURE CONDITIONS:
-            if (gameState.totalCorrectAllDays <= 4) {
-                // If only 4 or fewer correct answers out of 20
-                keepJob = false;
-                reason = "Hanya " + gameState.totalCorrectAllDays + " jawaban benar dari 20 soal. Mengajar buruk!";
-            } else if (gameState.totalCorrectAllDays < gameState.warningThreshold) {
-                // If less than warning threshold (8)
-                keepJob = false;
-                reason = gameState.totalCorrectAllDays + " jawaban benar dari 20. Performa mengajar tidak memadai!";
-            } else if (stats.passRate < 50) {
-                // If pass rate is below 50%
-                keepJob = false;
-                reason = "Tingkat kelulusan hanya " + stats.passRate.toFixed(0) + "%. Siswa tidak siap ujian!";
-            } else if (stats.risk > 70) {
-                // If risk is too high
-                keepJob = false;
-                reason = "Risiko dipecat terlalu tinggi (" + stats.risk.toFixed(0) + "%)";
-            }
-            
-            // Check cheating
-            const cheatingCaught = Math.random() * 100 < stats.risk;
-            if (cheatingCaught && gameState.cheatedStudents.length > 0) {
-                keepJob = false;
-                reason = "Ketahuan memberi contekan! " + gameState.cheatedStudents.length + " siswa ketahuan mencontek.";
-            }
-            
-            // Calculate final pass rate with adjustments
-            let finalPassRate = stats.passRate;
-            
-            // Apply bonuses/penalties based on teaching quality
-            if (gameState.totalCorrectAllDays >= gameState.perfectBonus) {
-                finalPassRate += 20; // Big bonus for excellent teaching
-            } else if (gameState.totalCorrectAllDays >= gameState.requiredCorrect) {
-                finalPassRate += 10; // Good bonus for meeting requirements
-            } else if (gameState.totalCorrectAllDays >= gameState.warningThreshold) {
-                finalPassRate -= 10; // Penalty for borderline performance
-            } else {
-                finalPassRate -= 30; // Severe penalty for poor performance
-            }
-            
-            // Apply score bonus
-            const scoreBonus = Math.floor(gameState.teacherScore / 10);
-            finalPassRate += scoreBonus;
-            
-            // Final check: must have at least required correct answers AND decent pass rate
-            if (keepJob && gameState.totalCorrectAllDays >= gameState.requiredCorrect && finalPassRate >= 70) {
-                keepJob = true;
-            } else if (keepJob) {
-                keepJob = false;
-                if (gameState.totalCorrectAllDays < gameState.requiredCorrect) {
-                    reason = "Hanya " + gameState.totalCorrectAllDays + " jawaban benar (minimum 12 diperlukan).";
-                } else {
-                    reason = "Tingkat kelulusan hanya " + finalPassRate.toFixed(0) + "% (minimum 70% diperlukan).";
-                }
-            }
-            
-            // Store final result for restart popup
-            gameState.finalResult = {
-                keepJob,
-                cheatingCaught,
-                stats,
-                finalPassRate,
-                reason
-            };
-            
-            showExamResults(keepJob, cheatingCaught, stats, finalPassRate, reason);
-        }
-
-        function showExamResults(keepJob, cheatingCaught, stats, finalPassRate, reason) {
             document.getElementById('examOverlay').style.display = 'none';
             
-            const resultContainer = document.getElementById('resultContainer');
-            const resultTitle = document.getElementById('resultTitle');
-            const resultMessage = document.getElementById('resultMessage');
+            const results = gameState.examResults;
+            let passed = false;
+            let message = "";
             
-            if (keepJob) {
-                resultContainer.style.background = '#e8f5e9';
-                resultTitle.textContent = "🎉 SELAMAT! ANDA TETAP JADI GURU!";
-                resultTitle.style.color = "#2E7D32";
-                resultMessage.innerHTML = `
-                    <p><strong>Anda berhasil mempertahankan pekerjaan!</strong></p>
-                    <p>📊 <strong>Statistik Akhir:</strong></p>
-                    <p>✅ Jawaban Benar: ${gameState.totalCorrectAllDays}/20 (${Math.round((gameState.totalCorrectAllDays/20)*100)}%)</p>
-                    <p>🎓 Tingkat Kelulusan: ${finalPassRate.toFixed(0)}%</p>
-                    <p>🏆 Skor Guru: ${gameState.teacherScore}</p>
-                    ${cheatingCaught ? "<p>⚠️ Ada masalah kecil, tapi kepala sekolah memaafkan Anda.</p>" : 
-                      gameState.totalCorrectAllDays >= gameState.perfectBonus ? 
-                      "<p>🌟 <strong>PERFORMAN LUAR BIASA!</strong> Mengajar sempurna!</p>" : 
-                      gameState.totalCorrectAllDays >= gameState.requiredCorrect ?
-                      "<p>👍 <strong>Kinerja baik!</strong> Anda memenuhi standar minimum.</p>" : ""}
+            // Determine result
+            if (gameState.totalCorrectAllDays >= gameState.requiredCorrect && results.passRate >= 70) {
+                passed = true;
+                message = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 5rem; margin: 20px 0;">🎉</div>
+                        <h3 style="color: #4CAF50;">SELAMAT!</h3>
+                        <p>Anda berhasil menjadi guru terbaik!</p>
+                        <p><strong>${gameState.totalCorrectAllDays}/20</strong> jawaban benar</p>
+                        <p><strong>${Math.round(results.passRate)}%</strong> siswa lulus</p>
+                        <p><strong>⭐ Skor Akhir: ${gameState.teacherScore}</strong></p>
+                    </div>
                 `;
             } else {
-                resultContainer.style.background = '#ffebee';
-                resultTitle.textContent = "😢 ANDA DIPECAT!";
-                resultTitle.style.color = "#C62828";
-                resultMessage.innerHTML = `
-                    <p><strong>Kepala sekolah memutuskan untuk memecat Anda!</strong></p>
-                    <p>📉 <strong>Alasan:</strong> ${reason}</p>
-                    <p>📊 <strong>Statistik Akhir:</strong></p>
-                    <p>✅ Jawaban Benar: ${gameState.totalCorrectAllDays}/20 (${Math.round((gameState.totalCorrectAllDays/20)*100)}%)</p>
-                    <p>❌ Minimum diperlukan: 12/20 (60%)</p>
-                    <p>🎓 Tingkat Kelulusan: ${finalPassRate.toFixed(0)}%</p>
-                    <p>🏆 Skor Guru: ${gameState.teacherScore}</p>
-                    ${cheatingCaught ? 
-                    `<p>⛔ <strong>Ketahuan memberi contekan!</strong> ${gameState.cheatedStudents.length} siswa ketahuan mencontek.</p>` : 
-                    gameState.totalCorrectAllDays <= 4 ?
-                    `<p>💀 <strong>KINERJA BENCANA!</strong> Hanya ${gameState.totalCorrectAllDays} jawaban benar dari 20 soal.</p>` :
-                    gameState.totalCorrectAllDays < 8 ?
-                    `<p>⚠️ <strong>Mengajar sangat buruk!</strong> Siswa tidak belajar apa-apa.</p>` : ""}
+                message = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 5rem; margin: 20px 0;">😢</div>
+                        <h3 style="color: #FF5252;">ANDA DIPECAT!</h3>
+                        <p>Kinerja mengajar belum memenuhi standar.</p>
+                        <p>Hanya <strong>${gameState.totalCorrectAllDays}/20</strong> jawaban benar</p>
+                        <p>Minimal diperlukan: <strong>12/20</strong></p>
+                    </div>
                 `;
             }
             
-            resultMessage.innerHTML += `
-                <hr style="margin: 20px 0;">
-                <h3>📋 Detail Hasil Ujian:</h3>
-                <p>Rata-rata nilai siswa: ${stats.avgScore.toFixed(1)}</p>
-                <p>Semangat guru akhir: ${gameState.morale}</p>
-                <p>Kesabaran akhir: ${gameState.patience}%</p>
-                ${gameState.caughtStudents.length > 0 ? `<p>Siswa dikirim BK: ${gameState.caughtStudents.length} orang</p>` : ''}
-            `;
-            
-            document.getElementById('resultOverlay').style.display = 'flex';
-            
-            // Show restart popup after 2 seconds
-            setTimeout(() => {
-                showRestartPopup();
-            }, 2000);
-        }
-
-        // ========================
-        // RESTART POPUP FUNCTIONS
-        // ========================
-
-        function showRestartPopup() {
-            // Update high score if needed
+            // Update high scores
             if (gameState.teacherScore > highScore) {
                 highScore = gameState.teacherScore;
                 localStorage.setItem('mathTeacherHighScore', highScore);
             }
             
-            document.getElementById('highScoreValue').textContent = highScore;
-            
-            const restartTitle = document.getElementById('restartTitle');
-            if (gameState.finalResult && gameState.finalResult.keepJob) {
-                restartTitle.textContent = "🏆 SELAMAT! ANDA MENANG!";
-                restartTitle.style.color = "#FFD700";
-            } else {
-                restartTitle.textContent = "😢 GAME OVER - ANDA DIPECAT";
-                restartTitle.style.color = "#FF6B6B";
+            if (gameState.totalCorrectAllDays > bestCorrect) {
+                bestCorrect = gameState.totalCorrectAllDays;
+                localStorage.setItem('mathTeacherBestCorrect', bestCorrect);
             }
             
-            const finalStats = document.getElementById('finalStats');
-            finalStats.innerHTML = `
-                <h3 style="margin-bottom: 10px;">📊 STATISTIK AKHIR</h3>
-                <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">
-                    Jawaban Benar: <span style="color: #FFD700;">${gameState.totalCorrectAllDays}/20</span>
-                </p>
-                <p style="font-size: 20px; margin: 10px 0;">
-                    Skor Akhir: <strong>${gameState.teacherScore}</strong>
-                </p>
-                ${gameState.finalResult ? `<p>Tingkat Kelulusan: <strong>${gameState.finalResult.finalPassRate.toFixed(0)}%</strong></p>` : ''}
-            `;
-            
-            const statsGrid = document.getElementById('statsGrid');
-            statsGrid.innerHTML = `
-                <div class="stat-item">
-                    <div>🏆 Skor Tertinggi</div>
-                    <div style="font-size: 20px; font-weight: bold;">${highScore}</div>
-                </div>
-                <div class="stat-item">
-                    <div>😊 Kesabaran Akhir</div>
-                    <div style="font-size: 20px; font-weight: bold;">${gameState.patience}%</div>
-                </div>
-                <div class="stat-item">
-                    <div>💪 Semangat Akhir</div>
-                    <div style="font-size: 20px; font-weight: bold;">${gameState.morale}</div>
-                </div>
-                <div class="stat-item">
-                    <div>✅ Jawaban Benar</div>
-                    <div style="font-size: 20px; font-weight: bold;">${gameState.totalCorrectAllDays}/20</div>
+            // Show result
+            document.getElementById('resultTitle').textContent = passed ? "🎉 SELAMAT ANDA MENANG!" : "😢 GAME OVER";
+            document.getElementById('resultContent').innerHTML = message + `
+                <div style="background: rgba(255, 222, 89, 0.2); padding: 20px; border-radius: 15px; margin-top: 20px;">
+                    <h4 style="color: #ff8a00;">📊 Statistik Akhir</h4>
+                    <p>🏆 Skor Tertinggi: ${highScore}</p>
+                    <p>✅ Jawaban Benar Terbaik: ${bestCorrect}/20</p>
+                    <p>⭐ Skor Anda: ${gameState.teacherScore}</p>
+                    <p>📚 Total Pertanyaan Dijawab: ${gameState.totalQuestionsAllDays}</p>
                 </div>
             `;
             
-            const achievementBadge = document.getElementById('achievementBadge');
-            if (gameState.totalCorrectAllDays >= 18) {
-                achievementBadge.style.display = 'block';
-                achievementBadge.innerHTML = `
-                    <h4>🏅 GURU TERBAIK!</h4>
-                    <p>🎯 <strong>PERFORMAN SEMPURNA</strong></p>
-                    <p>${gameState.totalCorrectAllDays}/20 jawaban benar!</p>
-                `;
-            } else if (gameState.totalCorrectAllDays >= 15) {
-                achievementBadge.style.display = 'block';
-                achievementBadge.innerHTML = `
-                    <h4>🏅 PENCAPAIAN TINGGI!</h4>
-                    <p>⭐ <strong>GURU HEBAT</strong></p>
-                    <p>${gameState.totalCorrectAllDays}/20 jawaban benar!</p>
-                `;
-            } else if (gameState.totalCorrectAllDays >= 12) {
-                achievementBadge.style.display = 'block';
-                achievementBadge.innerHTML = `
-                    <h4>🎖️ PENCAPAIAN BAIK!</h4>
-                    <p>👍 <strong>GURU KOMPETEN</strong></p>
-                    <p>${gameState.totalCorrectAllDays}/20 jawaban benar!</p>
-                `;
-            } else {
-                achievementBadge.style.display = 'none';
-            }
-            
-            document.getElementById('restartPopup').style.display = 'flex';
+            document.getElementById('resultOverlay').style.display = 'flex';
         }
 
-        function confirmRestart() {
-            document.getElementById('restartPopup').style.display = 'none';
-            document.getElementById('resultOverlay').style.display = 'none';
-            restartGame();
+        // ========================
+        // HELPER FUNCTIONS
+        // ========================
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
         }
 
-        function declineRestart() {
-            document.getElementById('restartPopup').style.display = 'none';
-            
-            const resultMessage = document.getElementById('resultMessage');
-            resultMessage.innerHTML += `
-                <hr style="margin: 20px 0;">
-                <div style="text-align: center; padding: 20px; background: rgba(0,0,0,0.1); border-radius: 10px;">
-                    <h3>🙏 Terima Kasih Telah Bermain!</h3>
-                    <p>Skor Tertinggi Anda: <strong>${highScore}</strong></p>
-                    <p>Jawaban Benar Terbaik: <strong>${Math.max(gameState.totalCorrectAllDays, localStorage.getItem('mathTeacherBestCorrect') || 0)}/20</strong></p>
-                    <p>Permainan telah berakhir. Refresh halaman untuk mulai baru.</p>
-                </div>
-            `;
-            
-            // Save best correct answers
-            const bestCorrect = Math.max(gameState.totalCorrectAllDays, localStorage.getItem('mathTeacherBestCorrect') || 0);
-            localStorage.setItem('mathTeacherBestCorrect', bestCorrect);
+        function showHelp() {
+            const helpText = `🎮 MATH TEACHER ADVENTURE 🎮
+
+✨ CARA BERMAIN:
+1. Popup "Mulai Hari" akan muncul untuk memulai pelajaran
+2. Jawab pertanyaan matematika dengan tepat
+3. Jika siswa memiliki pertanyaan, popup akan muncul
+4. Jaga kesabaran guru di atas 30%
+5. Selesaikan semua 4 hari dengan sukses!
+
+🏆 TUJUAN:
+- Jawab minimal 12 dari 20 soal dengan benar
+- Hasilkan tingkat kelulusan minimal 70%
+- Tidak kehabisan kesabaran
+
+📚 MATERI HARI 1:
+- 5 soal Permutasi (memperhatikan urutan)
+- 5 soal Kombinasi (tidak memperhatikan urutan)
+- Soal akan muncul secara acak!
+
+🎮 KONTROL:
+- Klik jawaban untuk menjawab pertanyaan
+- Klik siswa untuk berinteraksi
+- Jawab sebelum waktu habis
+
+⭐ TIPS:
+- Jawab pertanyaan siswa untuk bonus poin besar
+- Jaga kesabaran dengan jawaban benar
+- Perhatikan jenis soal (Permutasi/Kombinasi)
+- Hari 1 adalah kunci kesuksesan!
+
+Skor Tertinggi: ${highScore}
+Jawaban Benar Terbaik: ${bestCorrect}/20`;
+
+            alert(helpText);
+        }
+
+        function showHighScores() {
+            showNotification(`🏆 Skor Tertinggi: ${highScore} | ✅ Terbaik: ${bestCorrect}/20`, "correct");
         }
 
         function restartGame() {
-            document.getElementById('restartPopup').style.display = 'none';
-            document.getElementById('resultOverlay').style.display = 'none';
-            
+            // Reset game state
             gameState.currentDay = 1;
             gameState.currentQuestion = 0;
             gameState.gameActive = false;
@@ -2207,110 +2092,62 @@
             gameState.totalCorrectAllDays = 0;
             gameState.totalQuestionsAllDays = 0;
             gameState.patience = 100;
-            gameState.knowledgePoints = 0;
             gameState.teacherScore = 0;
             gameState.studentQuestionActive = false;
             gameState.askingStudent = null;
-            gameState.studentQuestionsAnswered = 0;
             gameState.examActive = false;
-            gameState.caughtStudents = [];
-            gameState.cheatedStudents = [];
             gameState.morale = 100;
-            gameState.riskLevel = 30;
-            gameState.iceCreamBought = false;
-            gameState.examTimeLeft = 120;
-            gameState.remainingActions = 4;
-            gameState.finalResult = null;
+            gameState.studentQuestionCount = 0;
             
-            clearInterval(gameState.timerInterval);
-            clearInterval(gameState.examTimerInterval);
-            clearAllStudentTimers();
-            if (gameState.autoNextTimer) {
-                clearTimeout(gameState.autoNextTimer);
-            }
-            
+            // Reset student scores
             students.forEach(student => {
-                studentScores[student] = 4.0 + Math.random() * 1.5;
+                studentScores[student.name] = 4.0 + Math.random() * 1.5;
             });
             
-            document.getElementById('riskIndicator').style.display = 'none';
-            document.getElementById('dayCompleteOverlay').style.display = 'none';
-            document.getElementById('questionIndicator').style.display = 'none';
+            // Acak soal lagi
+            shuffleQuestions();
             
+            // Reset UI
+            document.getElementById('resultOverlay').style.display = 'none';
             document.querySelector('.main-grid').style.display = 'grid';
             document.querySelector('.game-controls').style.display = 'flex';
-            document.getElementById('examTimer').style.display = 'none';
             
+            document.getElementById('questionText').textContent = 
+                "Permainan dimulai ulang! Siap untuk petualangan baru? ✨";
+            
+            // Reset timer display
+            document.getElementById('timer').textContent = "⏰ 25s";
+            document.getElementById('timer').style.background = "linear-gradient(145deg, #ff5252, #ff6b6b)";
+            
+            // Clear answer grid
+            document.getElementById('answerOptions').innerHTML = '';
+            
+            // Update everything
             updateUI();
-            document.getElementById('questionText').textContent = "Selamat datang! Klik 'Mulai Hari' untuk memulai.";
-            document.getElementById('startDayBtn').disabled = false;
-            document.getElementById('nextQuestionBtn').style.display = 'none';
-            document.getElementById('restartBtn').style.display = 'none';
-            document.getElementById('askBtn').disabled = true;
+            updateStudentList();
+            updateProgressBars();
             
-            showFeedback("🔄 Permainan dimulai ulang! Cobalah lebih baik kali ini!", true);
-            showDifficultyWarning();
+            // Clear any existing notifications
+            document.getElementById('notification').style.display = 'none';
+            
+            // Close all popups
+            closePopup('startDayPopup');
+            closePopup('studentQuestionPopup');
+            
+            // Show welcome message
+            setTimeout(() => {
+                showNotification("Selamat datang kembali! Semoga sukses! 🎯", "correct");
+                // Show start day popup automatically
+                setTimeout(() => {
+                    showStartDayPopup();
+                }, 1500);
+            }, 500);
         }
 
-        function showHelp() {
-            alert(`🎮 CARA BERMAIN - MODE SULIT ⚠️
-
-🏆 TUJUAN:
-- Menjawab minimal 12 dari 20 soal dengan benar
-- Menghasilkan tingkat kelulusan minimal 70%
-- Tidak ketahuan memberi contekan
-
-📊 SISTEM PENILAIAN:
-- Total 20 soal (Hari 1:10, Hari 2:5, Hari 3:5)
-- Minimal 12 benar untuk lolos standar
-- Jika < 8 benar: OTOMATIS DIPECAT!
-- Jika < 12 benar: Risiko tinggi dipecat
-
-⏰ PERUBAHAN KESULITAN:
-- Waktu soal: 25 detik (dari 30)
-- Penalti salah: -20 kesabaran (dari 15)
-- Pertanyaan siswa: SANGAT CEPAT (2-7 detik)
-- Waktu tunggu siswa: 10 detik (dari 15)
-
-📈 PENGARUH JAWABAN BENAR:
-- 0-4 benar: DIPECAT OTOMATIS
-- 5-7 benar: Risiko sangat tinggi
-- 8-11 benar: Risiko tinggi
-- 12-14 benar: Standar minimum
-- 15-17 benar: Kinerja baik
-- 18-20 benar: Kinerja sempurna + bonus
-
-🎓 HARI 4 - UJIAN NASIONAL:
-- Nilai siswa tergantung kualitas mengajar Anda
-- Jika Anda banyak salah, nilai siswa turun drastis
-- Patroli: +10 skor per siswa NPC
-- Jalan-jalan: Tingkatkan semangat
-
-💡 TIPS UNTUK MENANG:
-1. Fokus jawab soal dengan BENAR, bukan cepat
-2. Jawab pertanyaan siswa untuk naikkan nilai mereka
-3. Jaga kesabaran di atas 30%
-4. Targetkan minimal 3 benar per hari
-5. Hari 1 sangat penting (10 soal!)
-
-🏆 HIGH SCORE:
-- Skor tertinggi: ${highScore}
-- Skor disimpan di browser
-
-⚠️ PERINGATAN:
-Game ini SANGAT SULIT! Hanya guru terbaik yang akan bertahan!`);
-        }
-
-        // Initialize game
-        updateUI();
-        updateStudentList();
-        updateRanking();
-        document.getElementById('highScoreValue').textContent = highScore;
-        
-        // Show difficulty warning on load
-        setTimeout(() => {
-            showDifficultyWarning();
-        }, 1000);
+        // ========================
+        // INITIALIZE GAME
+        // ========================
+        window.onload = initGame;
     </script>
 </body>
 </html>
